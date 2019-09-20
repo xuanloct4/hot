@@ -1,0 +1,11 @@
+{
+  "require": {
+    "vlucas/phpdotenv": "^2.4",
+    "cboden/ratchet": "^0.4.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "Src\\": "src/"
+    }
+  }
+}
