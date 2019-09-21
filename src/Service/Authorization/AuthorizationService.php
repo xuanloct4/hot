@@ -1,8 +1,8 @@
 <?php
     namespace Src\Service\Authorization;
-    use Main\Configuration;
     use Src\Entity\Authorization\Authorization;
-    
+    use Src\System\Configuration;
+
     class AuthorizationService {
         
         private $db = null;

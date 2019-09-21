@@ -1,15 +1,17 @@
 <?php
     namespace Src\Service;
-	use Main\Configuration;
     use Src\Entity\Person;
-    
+    use Src\System\Configuration;
+
     class PersonService {
         
         private $db = null;
-        
+        private $table;
+
         public function __construct()
         {
 			$this->db = Configuration::getInstance()->getConnection();
+            $this->table = Person::$table_name;
         }
         
         public function findAll()
@@ -18,7 +20,7 @@
             SELECT 
             id, firstname, lastname, firstparent_id, secondparent_id
             FROM
-            person;
+            $this->table;
             ";
             
             try {

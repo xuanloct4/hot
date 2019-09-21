@@ -3,7 +3,7 @@
     use Main\Configuration;
     use Src\Entity\Authorization\Authorization;
     
-    class AuthorizationService {
+    class TopoService {
         
         private $db = null;
         
