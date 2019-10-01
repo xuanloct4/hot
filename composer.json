@@ -1,7 +1,9 @@
 {
   "require": {
     "vlucas/phpdotenv": "^2.4",
-    "cboden/ratchet": "^0.4.1"
+    "cboden/ratchet": "^0.4.1",
+    "myclabs/php-enum": "^1.7",
+    "ext-json": "^1.7"
   },
   "autoload": {
     "psr-4": {

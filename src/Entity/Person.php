@@ -3,7 +3,7 @@
     
     class Person{
         // table name
-        public static $table_name = "Person";
+        public static $table_name = "person";
         
         // table columns
         public $id;

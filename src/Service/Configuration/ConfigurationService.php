@@ -1,11 +1,9 @@
 <?php
 
-namespace Src\Service\Sensor;
-
-use Src\Entity\Sensor\Sensor;
+namespace Src\Service\Configuration;
 use Src\System\Configuration;
 
-class SensorService
+class ConfigurationService
 {
 
     private $db = null;
@@ -19,7 +17,7 @@ class SensorService
     private function __construct()
     {
         $this->db = Configuration::getInstance()->getConnection();
-        $this->table = Sensor::$table_name;
+        $this->table = \Src\Entity\Configuration\Configuration::$table_name;
     }
 
     // The object is created from within the class itself
@@ -27,7 +25,7 @@ class SensorService
     public static function getInstance()
     {
         if (self::$instance == null) {
-            self::$instance = new SensorService();
+            self::$instance = new ConfigurationService();
         }
 
         return self::$instance;
@@ -46,7 +44,7 @@ class SensorService
         try {
             $statement = $this->db->query($statement);
             //            $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
-            $result = $statement->fetchAll(\PDO::FETCH_CLASS, 'Src\Entity\Sensor\Sensor');
+            $result = $statement->fetchAll(\PDO::FETCH_CLASS, 'Src\Entity\Configuration\Configuration');
             return $result;
         } catch (\PDOException $e) {
             exit($e->getMessage());
@@ -67,7 +65,7 @@ class SensorService
             $statement = $this->db->prepare($statement);
             $statement->execute(array($id));
             //            $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
-            $result = $statement->fetchAll(\PDO::FETCH_CLASS, 'Src\Entity\Sensor\Sensor');
+            $result = $statement->fetchAll(\PDO::FETCH_CLASS, 'Src\Entity\Configuration\Configuration');
             return $result;
         } catch (\PDOException $e) {
             exit($e->getMessage());
@@ -78,23 +76,22 @@ class SensorService
     {
         $statement = "
             INSERT INTO $this->table 
-            (name, description, model, manufacturer, version, firmware, image, public_contacts, internal_contacts)
+            (uris, binary, strings, update_order, type, scopes, is_deleted, is_activated)
             VALUES
-            (:name, :description, :model, :manufacturer, :version, :firmware, :image, :public_contacts, :internal_contacts);
+            (:uris, :binary, :strings, :update_order, :type, :scopes, :is_deleted, :is_activated);
             ";
 
         try {
             $statement = $this->db->prepare($statement);
             $statement->execute(array(
-                'name' => $input['name'],
-                'description' => $input['description'],
-                'model' => $input['model'],
-                'manufacturer' => $input['manufacturer'],
-                'version' => $input['version'],
-                'firmware' => $input['firmware'],
-                'image' => $input['image'],
-                'public_contacts' => $input['public_contacts'],
-                'internal_contacts' => $input['internal_contacts']
+                'uris' => $input['uris'],
+                'binary' => $input['binary'],
+                'strings' => $input['strings'],
+                'update_order' => $input['update_order'],
+                'type' => $input['type'],
+                'scopes' => $input['scopes'],
+                'is_deleted' => $input['is_deleted'],
+                'is_activated' => $input['is_activated']
             ));
             return $statement->rowCount();
         } catch (\PDOException $e) {
@@ -107,15 +104,14 @@ class SensorService
         $statement = "
             UPDATE $this->table
             SET 
-            name = :name,
-            description  = :description,
-            model = :model,
-            manufacturer = :manufacturer,
-            version  = :version,
-            firmware = :firmware,
-            image = :image,
-            public_contacts = :public_contacts,
-            internal_contacts  = :internal_contacts
+            uris = :uris,
+            binary  = :binary,
+            strings = :strings,
+            update_order = :update_order,
+            type = :type,
+            scopes  = :scopes,
+            is_deleted = :is_deleted,
+            is_activated = :is_activated
             WHERE id = :id;
             ";
 
@@ -123,15 +119,14 @@ class SensorService
             $statement = $this->db->prepare($statement);
             $statement->execute(array(
                 'id' => (int) $id,
-                'name' => $input['name'],
-                'description' => $input['description'],
-                'model' => $input['model'],
-                'manufacturer' => $input['manufacturer'],
-                'version' => $input['version'],
-                'firmware' => $input['firmware'],
-                'image' => $input['image'],
-                'public_contacts' => $input['public_contacts'],
-                'internal_contacts' => $input['internal_contacts']
+                'uris' => $input['uris'],
+                'binary' => $input['binary'],
+                'strings' => $input['strings'],
+                'update_order' => $input['update_order'],
+                'type' => $input['type'],
+                'scopes' => $input['scopes'],
+                'is_deleted' => $input['is_deleted'],
+                'is_activated' => $input['is_activated']
             ));
             return $statement->rowCount();
         } catch (\PDOException $e) {

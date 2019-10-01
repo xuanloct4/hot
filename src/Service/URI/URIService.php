@@ -3,28 +3,50 @@
 namespace Src\Service\URI;
 
 
+use Src\Entity\URI\URI;
+use Src\System\Configuration;
+
 class URIService {
 
     private $db = null;
+    private $table;
 
-    public function __construct()
+    // Hold the class instance.
+    private static $instance = null;
+
+    // The constructor is private
+    // to prevent initiation with outer code.
+    private function __construct()
     {
         $this->db = Configuration::getInstance()->getConnection();
+        $this->table = URI::$table_name;
     }
 
+    // The object is created from within the class itself
+    // only if the class has no instance.
+    public static function getInstance()
+    {
+        if (self::$instance == null) {
+            self::$instance = new URIService();
+        }
+
+        return self::$instance;
+    }
+
+    // CRUD
     public function findAll()
     {
         $statement = "
             SELECT 
-            id, firstname, lastname, firstparent_id, secondparent_id
+            *
             FROM
-            person;
+            $this->table;
             ";
 
         try {
             $statement = $this->db->query($statement);
             //            $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
-            $result = $statement->fetchAll(\PDO::FETCH_CLASS, 'Src\Entity\Person');
+            $result = $statement->fetchAll(\PDO::FETCH_CLASS, 'Src\Entity\URI\URI');
             return $result;
         } catch (\PDOException $e) {
             exit($e->getMessage());
@@ -35,9 +57,9 @@ class URIService {
     {
         $statement = "
             SELECT 
-            id, firstname, lastname, firstparent_id, secondparent_id
+            *
             FROM
-            person
+            $this->table
             WHERE id = ?;
             ";
 
@@ -45,20 +67,28 @@ class URIService {
             $statement = $this->db->prepare($statement);
             $statement->execute(array($id));
             //            $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
-            $result = $statement->fetchAll(\PDO::FETCH_CLASS, 'Src\Entity\Person');
+            $result = $statement->fetchAll(\PDO::FETCH_CLASS, 'Src\Entity\URI\URI');
+            return $result;
+        } catch (\PDOException $e) {
+            exit($e->getMessage());
+        }
+    }
 
-            //            $person = new Person();
-            //            var_dump($person);
-            //            $statement->setFetchMode(\PDO::FETCH_INTO, $person);
-            //            $data = $statement->fetch();
-            //            var_dump($data, $person);
+    public function findByType($type)
+    {
+        $statement = "
+            SELECT 
+            *
+            FROM
+            $this->table
+            WHERE type = :type;
+            ";
 
-            //            var_dump($result);
-            //            foreach ($result as $person) {
-            //                var_dump($person);
-            //                var_dump(json_encode($person));
-            //            }
-
+        try {
+            $statement = $this->db->prepare($statement);
+            $statement->execute(array('type' => $type));
+            //            $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
+            $result = $statement->fetchAll(\PDO::FETCH_CLASS, 'Src\Entity\URI\URI');
             return $result;
         } catch (\PDOException $e) {
             exit($e->getMessage());
@@ -68,19 +98,22 @@ class URIService {
     public function insert(Array $input)
     {
         $statement = "
-            INSERT INTO person 
-            (firstname, lastname, firstparent_id, secondparent_id)
+            INSERT INTO $this->table 
+            (representation, content, virtual_address, physical_address, authorized_id, scopes, type)
             VALUES
-            (:firstname, :lastname, :firstparent_id, :secondparent_id);
+            (:representation, :content, :virtual_address, :physical_address, :authorized_id, :scopes, :type);
             ";
 
         try {
             $statement = $this->db->prepare($statement);
             $statement->execute(array(
-                'firstname' => $input['firstname'],
-                'lastname'  => $input['lastname'],
-                'firstparent_id' => $input['firstparent_id'] ?? null,
-                'secondparent_id' => $input['secondparent_id'] ?? null,
+                'representation' => $input['representation'],
+                'content' => $input['content'],
+                'virtual_address' => $input['virtual_address'],
+                'physical_address' => $input['physical_address'],
+                'authorized_id' => $input['authorized_id'],
+                'scopes' => $input['scopes'],
+                'type' => $input['type']
             ));
             return $statement->rowCount();
         } catch (\PDOException $e) {
@@ -91,23 +124,29 @@ class URIService {
     public function update($id, Array $input)
     {
         $statement = "
-            UPDATE person
+            UPDATE $this->table
             SET 
-            firstname = :firstname,
-            lastname  = :lastname,
-            firstparent_id = :firstparent_id,
-            secondparent_id = :secondparent_id
+            representation = :representation,
+            content  = :content,
+            virtual_address = :virtual_address,
+            physical_address = :physical_address,
+            authorized_id  = :authorized_id,
+            scopes = :scopes,
+            type = :type
             WHERE id = :id;
             ";
 
         try {
             $statement = $this->db->prepare($statement);
             $statement->execute(array(
-                'id' => (int) $id,
-                'firstname' => $input['firstname'],
-                'lastname'  => $input['lastname'],
-                'firstparent_id' => $input['firstparent_id'] ?? null,
-                'secondparent_id' => $input['secondparent_id'] ?? null,
+                'id' => (int)$id,
+                'representation' => $input['representation'],
+                'content' => $input['content'],
+                'virtual_address' => $input['virtual_address'],
+                'physical_address' => $input['physical_address'],
+                'authorized_id' => $input['authorized_id'],
+                'scopes' => $input['scopes'],
+                'type' => $input['type']
             ));
             return $statement->rowCount();
         } catch (\PDOException $e) {
@@ -118,7 +157,7 @@ class URIService {
     public function delete($id)
     {
         $statement = "
-            DELETE FROM person
+            DELETE FROM $this->table
             WHERE id = :id;
             ";
 

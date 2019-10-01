@@ -4,27 +4,46 @@
     use Src\System\Configuration;
 
     class AuthorizationService {
-        
+
         private $db = null;
-        
-        public function __construct()
+        private $table;
+
+        // Hold the class instance.
+        private static $instance = null;
+
+        // The constructor is private
+        // to prevent initiation with outer code.
+        private function __construct()
         {
             $this->db = Configuration::getInstance()->getConnection();
+            $this->table = Authorization::$table_name;
         }
-        
+
+        // The object is created from within the class itself
+        // only if the class has no instance.
+        public static function getInstance()
+        {
+            if (self::$instance == null) {
+                self::$instance = new AuthorizationService();
+            }
+
+            return self::$instance;
+        }
+
+        // CRUD
         public function findAll()
         {
             $statement = "
             SELECT 
-            id, firstname, lastname, firstparent_id, secondparent_id
+            *
             FROM
-            person;
+            $this->table;
             ";
             
             try {
                 $statement = $this->db->query($statement);
                 //            $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
-                $result = $statement->fetchAll(\PDO::FETCH_CLASS, 'Src\Entity\Person');
+                $result = $statement->fetchAll(\PDO::FETCH_CLASS, 'Src\Entity\Authorization\Authorization');
                 return $result;
             } catch (\PDOException $e) {
                 exit($e->getMessage());
@@ -35,9 +54,9 @@
         {
             $statement = "
             SELECT 
-            id, firstname, lastname, firstparent_id, secondparent_id
+            *
             FROM
-            person
+            $this->table
             WHERE id = ?;
             ";
             
@@ -45,43 +64,52 @@
                 $statement = $this->db->prepare($statement);
                 $statement->execute(array($id));
                 //            $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
-                $result = $statement->fetchAll(\PDO::FETCH_CLASS, 'Src\Entity\Person');
-                
-                //            $person = new Person();
-                //            var_dump($person);
-                //            $statement->setFetchMode(\PDO::FETCH_INTO, $person);
-                //            $data = $statement->fetch();
-                //            var_dump($data, $person);
-                
-                //            var_dump($result);
-                //            foreach ($result as $person) {
-                //                var_dump($person);
-                //                var_dump(json_encode($person));
-                //            }
-                
+                $result = $statement->fetchAll(\PDO::FETCH_CLASS, 'Src\Entity\Authorization\Authorization');
                 return $result;
             } catch (\PDOException $e) {
                 exit($e->getMessage());
             }    
         }
+
+        public function findByToken($token)
+        {
+            $statement = "
+            SELECT 
+            *
+            FROM
+            $this->table
+            WHERE token = :token;
+            ";
+
+            try {
+                $statement = $this->db->prepare($statement);
+                $statement->execute(array('token' => $token));
+                //            $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
+                $result = $statement->fetchAll(\PDO::FETCH_CLASS, 'Src\Entity\Authorization\Authorization');
+                return $result;
+            } catch (\PDOException $e) {
+                exit($e->getMessage());
+            }
+        }
         
         public function insert(Array $input)
         {
             $statement = "
-            INSERT INTO person 
-            (firstname, lastname, firstparent_id, secondparent_id)
+            INSERT INTO $this->table 
+            (name, uuid, authorized_code, token, expired_interval)
             VALUES
-            (:firstname, :lastname, :firstparent_id, :secondparent_id);
+            (:name, :uuid, :authorized_code, :token, :expired_interval);
             ";
             
             try {
                 $statement = $this->db->prepare($statement);
                 $statement->execute(array(
-                                          'firstname' => $input['firstname'],
-                                          'lastname'  => $input['lastname'],
-                                          'firstparent_id' => $input['firstparent_id'] ?? null,
-                                          'secondparent_id' => $input['secondparent_id'] ?? null,
-                                          ));
+                    'name' => $input['name'],
+                    'uuid'  => $input['uuid'],
+                    'authorized_code' => $input['authorized_code'],
+                    'token'  => $input['token'],
+                    'expired_interval' => $input['expired_interval']
+                ));
                 return $statement->rowCount();
             } catch (\PDOException $e) {
                 exit($e->getMessage());
@@ -91,24 +119,26 @@
         public function update($id, Array $input)
         {
             $statement = "
-            UPDATE person
+            UPDATE $this->table
             SET 
-            firstname = :firstname,
-            lastname  = :lastname,
-            firstparent_id = :firstparent_id,
-            secondparent_id = :secondparent_id
+            name = :name,
+            uuid  = :uuid,
+            authorized_code = :authorized_code,
+            token = :token,
+            expired_interval = :expired_interval
             WHERE id = :id;
             ";
             
             try {
                 $statement = $this->db->prepare($statement);
                 $statement->execute(array(
-                                          'id' => (int) $id,
-                                          'firstname' => $input['firstname'],
-                                          'lastname'  => $input['lastname'],
-                                          'firstparent_id' => $input['firstparent_id'] ?? null,
-                                          'secondparent_id' => $input['secondparent_id'] ?? null,
-                                          ));
+                    'id' => (int) $id,
+                    'name' => $input['name'],
+                    'uuid'  => $input['uuid'],
+                    'authorized_code' => $input['authorized_code'],
+                    'token'  => $input['token'],
+                    'expired_interval' => $input['expired_interval']
+                ));
                 return $statement->rowCount();
             } catch (\PDOException $e) {
                 exit($e->getMessage());
@@ -118,7 +148,7 @@
         public function delete($id)
         {
             $statement = "
-            DELETE FROM person
+            DELETE FROM $this->table
             WHERE id = :id;
             ";
             

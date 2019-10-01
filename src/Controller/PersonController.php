@@ -72,7 +72,7 @@ class PersonController extends Controller
     private function createUserFromRequest()
     {
         $input = (array)json_decode(file_get_contents('php://input'), TRUE);
-        if (!$this->validatePerson($input)) {
+		if (!$this->validatePerson($input)) {
             return $this::unprocessableEntityResponse();
         }
         $this->personService->insert($input);
