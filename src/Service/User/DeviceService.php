@@ -1,11 +1,12 @@
 <?php
 
-namespace Src\Service\Authorization;
+namespace Src\Service\User;
 
-use Src\Entity\Authorization\Authorization;
+
+use Src\Entity\User\Device;
 use Src\System\Configuration;
 
-class AuthorizationService
+class DeviceService
 {
 
     private $db = null;
@@ -19,7 +20,7 @@ class AuthorizationService
     private function __construct()
     {
         $this->db = Configuration::getInstance()->getConnection();
-        $this->table = Authorization::$table_name;
+        $this->table = Device::$table_name;
     }
 
     // The object is created from within the class itself
@@ -27,7 +28,7 @@ class AuthorizationService
     public static function getInstance()
     {
         if (self::$instance == null) {
-            self::$instance = new AuthorizationService();
+            self::$instance = new DeviceService();
         }
 
         return self::$instance;
@@ -46,7 +47,7 @@ class AuthorizationService
         try {
             $statement = $this->db->query($statement);
             //            $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
-            $result = $statement->fetchAll(\PDO::FETCH_CLASS, 'Src\Entity\Authorization\Authorization');
+            $result = $statement->fetchAll(\PDO::FETCH_CLASS, 'Src\Entity\User\Device');
             return $result;
         } catch (\PDOException $e) {
             exit($e->getMessage());
@@ -67,52 +68,58 @@ class AuthorizationService
             $statement = $this->db->prepare($statement);
             $statement->execute(array($id));
             //            $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
-            $result = $statement->fetchAll(\PDO::FETCH_CLASS, 'Src\Entity\Authorization\Authorization');
+            $result = $statement->fetchAll(\PDO::FETCH_CLASS, 'Src\Entity\User\Device');
             return $result;
         } catch (\PDOException $e) {
             exit($e->getMessage());
         }
     }
 
-    public function findByIDAndCode($uuid, $code)
+    public function findByModelAndOS($model,$os)
     {
         $statement = "
             SELECT 
             *
             FROM
             $this->table
-            WHERE uuid = :uuid
-            AND authorized_code = :authorized_code;
+            WHERE model = :model
+            AND os = :os;
             ";
 
         try {
             $statement = $this->db->prepare($statement);
-            $statement->execute(array('uuid' => $uuid, "authorized_code" => $code));
-            //            $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
-            $result = $statement->fetchAll(\PDO::FETCH_CLASS, 'Src\Entity\Authorization\Authorization');
+            $statement->execute(array(
+                'model' => $model,
+                'os' => $os));
+            $result = $statement->fetchAll(\PDO::FETCH_CLASS, 'Src\Entity\User\Device');
             return $result;
         } catch (\PDOException $e) {
             exit($e->getMessage());
         }
     }
 
-    public function insert(AuthorizationDTO $dto)
+    public function insert(DeviceDTO $dto)
     {
         $statement = "
             INSERT INTO $this->table 
-            (name, uuid, authorized_code, tokens, expired_interval)
+            (model, manufacturer, version, firmware, os, image, configuration, scopes, is_deleted, is_activated)
             VALUES
-            (:name, :uuid, :authorized_code, :tokens, :expired_interval);
+            (:model, :manufacturer, :version, :firmware, :os, :image, :configuration, :scopes, :is_deleted, :is_activated);
             ";
 
         try {
             $statement = $this->db->prepare($statement);
             $statement->execute(array(
-                'name' => $dto->getName(),
-                'uuid' => $dto->getUuid(),
-                'authorized_code' => $dto->getAuthorizedCode(),
-                'tokens' => $dto->getTokens(),
-                'expired_interval' => $dto->getExpiredInterval()
+                'model' => $dto->getModel(),
+                'manufacturer' => $dto->getManufacturer(),
+                'version' => $dto->getVersion(),
+                'firmware' => $dto->getFirmware(),
+                'os' => $dto->getOs(),
+                'image' => $dto->getImage(),
+                'configuration' => $dto->getConfiguration(),
+                'scopes' => (int)$dto->getScopes(),
+                'is_deleted' => $dto->getisDeleted(),
+                'is_activated' => $dto->getisActivated()
             ));
             return $statement->rowCount();
         } catch (\PDOException $e) {
@@ -120,16 +127,21 @@ class AuthorizationService
         }
     }
 
-    public function update(AuthorizationDTO $dto)
+    public function update(DeviceDTO $dto)
     {
         $statement = "
             UPDATE $this->table
             SET 
-            name = :name,
-            uuid  = :uuid,
-            authorized_code = :authorized_code,
-            tokens = :tokens,
-            expired_interval = :expired_interval
+            model = :model,
+            manufacturer  = :manufacturer,
+            version = :version,
+            firmware = :firmware,
+            os = :os,
+            image = :image,
+            configuration  = :configuration,
+            scopes = :scopes,
+            is_deleted = :is_deleted,
+            is_activated = :is_activated,
             WHERE id = :id;
             ";
 
@@ -137,11 +149,16 @@ class AuthorizationService
             $statement = $this->db->prepare($statement);
             $statement->execute(array(
                 'id' => (int)$dto->getId(),
-                'name' => $dto->getName(),
-                'uuid' => $dto->getUuid(),
-                'authorized_code' => $dto->getAuthorizedCode(),
-                'tokens' => $dto->getTokens(),
-                'expired_interval' => $dto->getExpiredInterval()
+                'model' => $dto->getModel(),
+                'manufacturer' => $dto->getManufacturer(),
+                'version' => $dto->getVersion(),
+                'firmware' => $dto->getFirmware(),
+                'os' => $dto->getOs(),
+                'image' => $dto->getImage(),
+                'configuration' => $dto->getConfiguration(),
+                'scopes' => (int)$dto->getScopes(),
+                'is_deleted' => $dto->getisDeleted(),
+                'is_activated' => $dto->getisActivated()
             ));
             return $statement->rowCount();
         } catch (\PDOException $e) {

@@ -3,7 +3,8 @@
     "vlucas/phpdotenv": "^2.4",
     "cboden/ratchet": "^0.4.1",
     "myclabs/php-enum": "^1.7",
-    "ext-json": "^1.7"
+    "ext-json": "^1.7",
+    "ext-libsodium": "^1.0.9"
   },
   "autoload": {
     "psr-4": {

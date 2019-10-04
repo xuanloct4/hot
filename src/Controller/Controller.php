@@ -11,6 +11,7 @@ abstract class Controller
     protected $requestParams;
     protected $requestBody;
 
+    protected $scopes;
     public function __construct()
     {
         // $this->init();
@@ -55,6 +56,24 @@ abstract class Controller
     {
         $this->requestBody = $requestBody;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getScopes()
+    {
+        return $this->scopes;
+    }
+
+    /**
+     * @param mixed $scopes
+     */
+    public function setScopes($scopes)
+    {
+        $this->scopes = $scopes;
+    }
+
+
     
     public function isMatchURLPattern()
     {

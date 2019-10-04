@@ -7,6 +7,36 @@ use Src\Definition\Comparison;
 
 class StringUtils
 {
+    public static function getScopes($str) {
+        $scopes = StringUtils::trimStringToArray("|", $str);
+        for ($i = 0; $i < sizeof($scopes); $i++) {
+            if (strcmp("",$scopes[$i]) == 0) {
+                $scopes[$i] = "0,0,0,0";
+            }
+        }
+        return $scopes;
+    }
+
+    public static function trimStringToArray($delimiter,$str) {
+        $arr = explode($delimiter, $str);
+        for ($i = 0; $i < sizeof($arr); $i++) {
+            $arr[$i] = trim($arr[$i]);
+        }
+        return $arr;
+    }
+
+    public static function trimStringToArrayWithNonEmptyElement($delimiter,$str) {
+        $arr = explode($delimiter, $str);
+        $s = -1;
+        for ($i = 0; $i < sizeof($arr); $i++) {
+            $trimmed = trim($arr[$i]);
+            if (strcmp("",$trimmed) != 0) {
+                $s = $s + 1;
+                $arr[$s] = $trimmed;
+            }
+        }
+        return $arr;
+    }
 
     public static function compareVersion($v1, $v2) {
         if ($v1 == null && $v2 == null) {
@@ -14,8 +44,8 @@ class StringUtils
         } else if (($v1 != null && $v2 == null) || ($v1 == null && $v2 != null)) {
             return Comparison::undefine;
         } else {
-            $v1Comp = explode(".", $v1);
-            $v2Comp = explode(".", $v2);
+            $v1Comp = self::trimStringToArray(".", $v1);
+            $v2Comp = self::trimStringToArray(".", $v2);
 
             $v1Size = sizeof($v1Comp);
             $v2Size = sizeof($v2Comp);
@@ -56,8 +86,8 @@ class StringUtils
         } else if (($s1 != null && $s2 == null) || ($s1 == null && $s2 != null)) {
             return Comparison::undefine;
         } else {
-            $s1Comp = explode("," , $s1);
-            $s2Comp = explode("," , $s2);
+            $s1Comp = self::trimStringToArray("," , $s1);
+            $s2Comp = self::trimStringToArray("," , $s2);
 
             $s1Size = sizeof($s1Comp);
             $s2Size = sizeof($s2Comp);

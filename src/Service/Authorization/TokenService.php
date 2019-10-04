@@ -2,10 +2,11 @@
 
 namespace Src\Service\Authorization;
 
-use Src\Entity\Authorization\Authorization;
+
+use Src\Entity\Authorization\Token;
 use Src\System\Configuration;
 
-class AuthorizationService
+class TokenService
 {
 
     private $db = null;
@@ -19,7 +20,7 @@ class AuthorizationService
     private function __construct()
     {
         $this->db = Configuration::getInstance()->getConnection();
-        $this->table = Authorization::$table_name;
+        $this->table = Token::$table_name;
     }
 
     // The object is created from within the class itself
@@ -27,7 +28,7 @@ class AuthorizationService
     public static function getInstance()
     {
         if (self::$instance == null) {
-            self::$instance = new AuthorizationService();
+            self::$instance = new TokenService();
         }
 
         return self::$instance;
@@ -46,7 +47,7 @@ class AuthorizationService
         try {
             $statement = $this->db->query($statement);
             //            $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
-            $result = $statement->fetchAll(\PDO::FETCH_CLASS, 'Src\Entity\Authorization\Authorization');
+            $result = $statement->fetchAll(\PDO::FETCH_CLASS, 'Src\Entity\Authorization\Token');
             return $result;
         } catch (\PDOException $e) {
             exit($e->getMessage());
@@ -67,51 +68,48 @@ class AuthorizationService
             $statement = $this->db->prepare($statement);
             $statement->execute(array($id));
             //            $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
-            $result = $statement->fetchAll(\PDO::FETCH_CLASS, 'Src\Entity\Authorization\Authorization');
+            $result = $statement->fetchAll(\PDO::FETCH_CLASS, 'Src\Entity\Authorization\Token');
             return $result;
         } catch (\PDOException $e) {
             exit($e->getMessage());
         }
     }
 
-    public function findByIDAndCode($uuid, $code)
+    public function findByToken($token)
     {
         $statement = "
             SELECT 
             *
             FROM
             $this->table
-            WHERE uuid = :uuid
-            AND authorized_code = :authorized_code;
+            WHERE token = :token;
             ";
 
         try {
             $statement = $this->db->prepare($statement);
-            $statement->execute(array('uuid' => $uuid, "authorized_code" => $code));
+            $statement->execute(array('token' => $token));
             //            $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
-            $result = $statement->fetchAll(\PDO::FETCH_CLASS, 'Src\Entity\Authorization\Authorization');
+            $result = $statement->fetchAll(\PDO::FETCH_CLASS, 'Src\Entity\Authorization\Token');
             return $result;
         } catch (\PDOException $e) {
             exit($e->getMessage());
         }
     }
 
-    public function insert(AuthorizationDTO $dto)
+    public function insert(TokenDTO $dto)
     {
         $statement = "
             INSERT INTO $this->table 
-            (name, uuid, authorized_code, tokens, expired_interval)
+            (authorized_id, token, expired_interval)
             VALUES
-            (:name, :uuid, :authorized_code, :tokens, :expired_interval);
+            (:authorized_id, :token, :expired_interval);
             ";
 
         try {
             $statement = $this->db->prepare($statement);
             $statement->execute(array(
-                'name' => $dto->getName(),
-                'uuid' => $dto->getUuid(),
-                'authorized_code' => $dto->getAuthorizedCode(),
-                'tokens' => $dto->getTokens(),
+                'authorized_id' => $dto->getAuthorizedId(),
+                'token' => $dto->getToken(),
                 'expired_interval' => $dto->getExpiredInterval()
             ));
             return $statement->rowCount();
@@ -125,10 +123,8 @@ class AuthorizationService
         $statement = "
             UPDATE $this->table
             SET 
-            name = :name,
-            uuid  = :uuid,
-            authorized_code = :authorized_code,
-            tokens = :tokens,
+            authorized_id = :authorized_id,
+            token = :token,
             expired_interval = :expired_interval
             WHERE id = :id;
             ";
@@ -137,10 +133,8 @@ class AuthorizationService
             $statement = $this->db->prepare($statement);
             $statement->execute(array(
                 'id' => (int)$dto->getId(),
-                'name' => $dto->getName(),
-                'uuid' => $dto->getUuid(),
-                'authorized_code' => $dto->getAuthorizedCode(),
-                'tokens' => $dto->getTokens(),
+                'authorized_id' => $dto->getAuthorizedId(),
+                'token' => $dto->getToken(),
                 'expired_interval' => $dto->getExpiredInterval()
             ));
             return $statement->rowCount();

@@ -30,4 +30,9 @@ class DateTimeUtils
 
         return $dateTime->format($dtFormat);
     }
+
+    public static function getCurrentTime(DateTimeZone $timezone = null) {
+        $date = new \DateTime();
+        return self::convertDateTimeToString($date, null, $timezone);
+    }
 }

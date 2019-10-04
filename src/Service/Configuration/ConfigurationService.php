@@ -1,7 +1,9 @@
 <?php
 
 namespace Src\Service\Configuration;
+use Src\Definition\Comparison;
 use Src\System\Configuration;
+use Src\Utils\StringUtils;
 
 class ConfigurationService
 {
@@ -70,6 +72,26 @@ class ConfigurationService
         } catch (\PDOException $e) {
             exit($e->getMessage());
         }
+    }
+
+    public function findByConfigIds($configIds, $scopes)
+    {
+        $configurations = array();
+        for ($i = 0; $i < sizeof($configIds); $i++) {
+            $configId = $configIds[$i];
+            $c = ConfigurationService::getInstance()->find($configId);
+            if (sizeof($c) > 0) {
+                foreach (StringUtils::getScopes(scopes) as $scope) {
+                    foreach (StringUtils::getScopes($c[0]->scopes) as $configScope) {
+                        $isScoped = StringUtils::compareScope($scope, $configScope);
+                        if ($isScoped == Comparison::descending || $isScoped == Comparison::equal) {
+                            array_push($configurations, $c[$i]);
+                        }
+                    }
+                }
+            }
+        }
+        return $configurations;
     }
 
     public function insert(Array $input)

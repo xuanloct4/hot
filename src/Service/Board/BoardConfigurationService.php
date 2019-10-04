@@ -95,7 +95,7 @@ class BoardConfigurationService
         }
     }
 
-    public function insert(Array $input)
+    public function insert(BoardConfigurationDTO $boardConfigurationDTO)
     {
         $statement = "
             INSERT INTO $this->table 
@@ -107,17 +107,17 @@ class BoardConfigurationService
         try {
             $statement = $this->db->prepare($statement);
             $statement->execute(array(
-                'board_id' => $input['board_id'],
-                'server_configuration_id' => $input['server_configuration_id'],
-                'user_device_id' => $input['user_device_id'],
-                'user_id' => $input['user_id'],
-                'topos' => $input['topos'],
-                'status' => $input['status'],
-                'authorized_id' => $input['authorized_id'],
-                'configuration' => $input['configuration'],
-                'scopes' => $input['scopes'],
-                'is_activated' => $input['is_activated'],
-                'is_deleted' => $input['is_deleted']
+                'board_id' => $boardConfigurationDTO->getBoardId(),
+                'server_configuration_id' => $boardConfigurationDTO->getServerConfigurationId(),
+                'user_device_id' => $boardConfigurationDTO->getUserDeviceId(),
+                'user_id' => $boardConfigurationDTO->getUserId(),
+                'topos' => $boardConfigurationDTO->getTopos(),
+                'status' => $boardConfigurationDTO->getStatus(),
+                'authorized_id' => $boardConfigurationDTO->getAuthorizedId(),
+                'configuration' => $boardConfigurationDTO->getConfiguration(),
+                'scopes' => $boardConfigurationDTO->getScopes(),
+                'is_activated' => $boardConfigurationDTO->getisActivated(),
+                'is_deleted' => $boardConfigurationDTO->getisDeleted()
             ));
             return $statement->rowCount();
         } catch (\PDOException $e) {
@@ -125,7 +125,7 @@ class BoardConfigurationService
         }
     }
 
-    public function update($id, Array $input)
+    public function update(BoardConfigurationDTO $boardConfigurationDTO)
     {
         $statement = "
             UPDATE $this->table
@@ -147,18 +147,18 @@ class BoardConfigurationService
         try {
             $statement = $this->db->prepare($statement);
             $statement->execute(array(
-                'id' => (int) $id,
-                'board_id' => $input['board_id'],
-                'server_configuration_id' => $input['server_configuration_id'],
-                'user_device_id' => $input['user_device_id'],
-                'user_id' => $input['user_id'],
-                'topos' => $input['topos'],
-                'status' => $input['status'],
-                'authorized_id' => $input['authorized_id'],
-                'configuration' => $input['configuration'],
-                'scopes' => $input['scopes'],
-                'is_activated' => $input['is_activated'],
-                'is_deleted' => $input['is_deleted']
+                'id' => (int)$boardConfigurationDTO->getId(),
+                'board_id' => $boardConfigurationDTO->getBoardId(),
+                'server_configuration_id' => $boardConfigurationDTO->getServerConfigurationId(),
+                'user_device_id' => $boardConfigurationDTO->getUserDeviceId(),
+                'user_id' => $boardConfigurationDTO->getUserId(),
+                'topos' => $boardConfigurationDTO->getTopos(),
+                'status' => $boardConfigurationDTO->getStatus(),
+                'authorized_id' => $boardConfigurationDTO->getAuthorizedId(),
+                'configuration' => $boardConfigurationDTO->getConfiguration(),
+                'scopes' => $boardConfigurationDTO->getScopes(),
+                'is_activated' => $boardConfigurationDTO->getisActivated(),
+                'is_deleted' => $boardConfigurationDTO->getisDeleted()
             ));
             return $statement->rowCount();
         } catch (\PDOException $e) {
