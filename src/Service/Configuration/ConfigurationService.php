@@ -19,7 +19,7 @@ class ConfigurationService
     private function __construct()
     {
         $this->db = Configuration::getInstance()->getConnection();
-        $this->table = \Src\Entity\Configuration\Configuration::$table_name;
+        $this->table = \Src\Entity\Configuration\Configuration::table();
     }
 
     // The object is created from within the class itself
@@ -74,23 +74,25 @@ class ConfigurationService
         }
     }
 
-    public function findByConfigIds($configIds, $scopes)
+    public function findByConfigIds($config, $scopes)
     {
+        $configIds = StringUtils::trimStringToArrayWithNonEmptyElement(",",$config);
         $configurations = array();
         for ($i = 0; $i < sizeof($configIds); $i++) {
             $configId = $configIds[$i];
             $c = ConfigurationService::getInstance()->find($configId);
             if (sizeof($c) > 0) {
-                foreach (StringUtils::getScopes(scopes) as $scope) {
+                foreach (StringUtils::getScopes($scopes) as $scope) {
                     foreach (StringUtils::getScopes($c[0]->scopes) as $configScope) {
                         $isScoped = StringUtils::compareScope($scope, $configScope);
                         if ($isScoped == Comparison::descending || $isScoped == Comparison::equal) {
-                            array_push($configurations, $c[$i]);
+                            array_push($configurations, $c[0]);
                         }
                     }
                 }
             }
         }
+
         return $configurations;
     }
 

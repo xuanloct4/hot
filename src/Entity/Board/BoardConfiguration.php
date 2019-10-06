@@ -5,7 +5,10 @@ namespace Src\Entity\Board;
 class BoardConfiguration
 {
     // table name
-    public static $table_name = "board_configuration";
+    public static function table()
+    {
+        return "board_configuration";
+    }
 
     // table columns
     public $id;

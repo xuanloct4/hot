@@ -6,7 +6,10 @@ namespace Src\Entity\User;
 class Device
 {
     // table name
-    public static $table_name = "device";
+    public static function table()
+    {
+        return "device";
+    }
 
     // table columns
     public $id;

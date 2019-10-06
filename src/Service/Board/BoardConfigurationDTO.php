@@ -39,6 +39,21 @@ class BoardConfigurationDTO
         $this->is_deleted = $boardConfiguration->is_deleted;
     }
 
+    public function toArray() {
+        return array("id" => $this->id,
+            "board_id" => $this->board_id,
+            "server_configuration_id" => $this->server_configuration_id,
+            "user_device_id" => $this->user_device_id,
+            "user_id" => $this->user_id,
+            "topos" => $this->topos,
+            "status" => $this->status,
+            "authorized_id" => $this->authorized_id,
+            "configuration" => $this->configuration,
+            "scopes" => $this->scopes,
+            "is_activated" => $this->is_activated,
+            "is_deleted" => $this->is_deleted);
+    }
+
     /**
      * @return mixed
      */

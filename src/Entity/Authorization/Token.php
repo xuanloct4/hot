@@ -6,7 +6,10 @@ namespace Src\Entity\Authorization;
 class Token
 {
     // table name
-    public static $table_name = "token";
+    public static function table()
+    {
+        return "token";
+    }
 
     // table columns
     public $id;

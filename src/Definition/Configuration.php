@@ -18,6 +18,11 @@ class Configuration extends Enum
     const SERVER_ALIAS = "server";
 
     const BASE_URL_COMPONENT_NUMBER = 3;
+    const TOKEN_LENGTH = 32;
+    const BOARD_TOKEN_EXPIRE_INTERVAL = 31536000;
+    const USER_TOKEN_EXPIRE_INTERVAL = 7776000;
+    const USER_DEVICE_TOKEN_EXPIRE_INTERVAL = 2592000;
+    const SERVER_EXPIRE_INTERVAL = -1;
 
     public static function getAlias($config){
         switch ($config) {

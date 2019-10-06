@@ -71,15 +71,15 @@ class Interceptor
             if (strcasecmp($name, Constants::ChanelID) == 0) {
                 $chanelId = $value;
             } else if (strcasecmp($name, Constants::Authorization) == 0) {
-                $token = $value;
+                $accessToken = $value;
             }
         }
 
         $this->scopes = "0,0,0,0";
         try {
-            $token = TokenService::getInstance()->findByToken($token);
-            if (sizeof($token) > 0) {
-                $authorization = AuthorizationService::getInstance()->find($token[0]->authorized_id);
+            $token = TokenService::getInstance()->findFirstByToken($accessToken);
+            if ($token != null) {
+                $authorization = AuthorizationService::getInstance()->find($token->authorized_id);
                 foreach ($authorization as $item) {
                     $auth_id = $item->id;
                     switch ($chanelId) {

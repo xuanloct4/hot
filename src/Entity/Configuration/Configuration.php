@@ -5,7 +5,10 @@ namespace Src\Entity\Configuration;
 class Configuration
 {
     // table name
-    public static $table_name = "configuration";
+    public static function table()
+    {
+        return "configuration";
+    }
 
     // table columns
     public $id;

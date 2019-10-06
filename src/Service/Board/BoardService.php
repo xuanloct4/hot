@@ -19,7 +19,7 @@ class BoardService
     private function __construct()
     {
         $this->db = Configuration::getInstance()->getConnection();
-        $this->table = Board::$table_name;
+        $this->table = Board::table();
     }
 
     // The object is created from within the class itself

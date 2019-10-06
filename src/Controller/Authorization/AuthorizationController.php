@@ -5,11 +5,14 @@ namespace Src\Controller\Authorization;
 use Src\Controller\Activation\Request\ActivateBoardConfigurationRequest;
 use Src\Controller\Activation\Response\BoardConfigurationResponse;
 use Src\Controller\Activation\Response\ConfigurationResponse;
+use Src\Controller\Authorization\Request\AuthorizeBoardRequest;
+use Src\Controller\Authorization\Response\BoardAuthorizationResponse;
 use Src\Controller\Controller;
 use Src\Definition\Comparison;
 use Src\Definition\Configuration;
 use Src\Definition\Constants;
 use Src\Service\Authorization\AuthorizationService;
+use Src\Service\Authorization\TokenService;
 use Src\Service\Board\BoardConfigurationDTO;
 use Src\Service\Board\BoardConfigurationService;
 use Src\Service\Configuration\ConfigurationService;
@@ -37,13 +40,13 @@ class AuthorizationController extends Controller
     {
             switch ($this->configuration) {
                 case Configuration::BOARD:
-                    return $this->authorizeBoardConfiguration();
+                    return $this->authorizeBoard();
                 case Configuration::USER:
-                    return $this->authorizeUserConfiguration();
+                    return $this->authorizeUser();
                 case Configuration::USER_DEVICE:
-                    return $this->authorizeUserDeviceConfiguration();
+                    return $this->authorizeUserDevice();
                 case Configuration::SERVER:
-                    return $this->authorizeServerConfiguration();
+                    return $this->authorizeServer();
             }
     }
 
@@ -57,60 +60,42 @@ class AuthorizationController extends Controller
         // TODO: Implement processDELETERequest() method.
     }
 
-    private function authorizeBoardConfiguration()
+    private function authorizeBoard()
     {
-        $activateRequest = new ActivateBoardConfigurationRequest($this->requestBody);
-        $a = AuthorizationService::getInstance()->findByIDAndCode($activateRequest->board_id,$activateRequest->authorized_code);
-        if (sizeof($a) > 0) {
-            $b = BoardConfigurationService::getInstance()->findByAuthID($a[0]->id);
-            if (sizeof($b) > 0) {
-                // Update status is_activated = true
-                $boardConfigEntity = $b[0];
-                $updateBoardConfigDTO = new BoardConfigurationDTO($boardConfigEntity);
-                $updateBoardConfigDTO->setIsActivated(b'1');
-                $updateBoardConfigDTO->setIsDeleted(b'0');
-                BoardConfigurationService::getInstance()->update($updateBoardConfigDTO);
-                // TODO
-                //Log to log table
-
-                $boardConfiguration = new BoardConfigurationResponse($b[0]);
-                $configurations = array();
-                $configIds = StringUtils::trimStringToArrayWithNonEmptyElement(",", $b[0]->configuration);
-                for ($i = 0; $i < sizeof($configIds); $i++) {
-                    $configId = $configIds[$i];
-                    $c = ConfigurationService::getInstance()->find($configId);
-                    if (sizeof($c) > 0) {
-                        foreach (StringUtils::getScopes($b[0]->scopes) as $boardScope) {
-                            foreach (StringUtils::getScopes($c[0]->scopes) as $configScope) {
-                                $isScoped = StringUtils::compareScope($boardScope, $configScope);
-                                if ($isScoped == Comparison::descending || $isScoped == Comparison::equal) {
-                                    $configuration = new ConfigurationResponse($c[0]);
-                                    array_push($configurations, $configuration);
-                                }
-                            }
-                        }
-                    }
-                }
-
-                // TODO
-                // Sorting by update_order and updated timestamp
-                $boardConfiguration->configuration = $configurations;
-
-                $response['status_code_header'] = 'HTTP/1.1 200 OK';
-                $response['body'] = json_encode($boardConfiguration);
-                return $response;
+        $activateRequest = new AuthorizeBoardRequest($this->requestBody);
+        $a = AuthorizationService::getInstance()->findFirstByIDAndCode($activateRequest->board_id,$activateRequest->authorized_code);
+        if ($a != null) {
+            $tokens = StringUtils::trimStringToArrayWithNonEmptyElement(",",$a->tokens);
+            // Find and delete all other token with the board id
+            foreach ($tokens as $tokenId) {
+                TokenService::getInstance()->delete((int)$tokenId);
             }
+
+            // Generate new token
+            $tokenString = StringUtils::generateRandomString(Configuration::TOKEN_LENGTH);
+            $expireTime = Configuration::BOARD_TOKEN_EXPIRE_INTERVAL;
+            $tokenId =TokenService::getInstance()->insert(array("authorized_id" => (int)$a->id,
+                "token" => $tokenString,
+                "expired_interval" => $expireTime));
+            AuthorizationService::getInstance()->update(array('id' => $a->id,
+                "tokens" => "$tokenId"));
+
+            $boardAuthorizationResponse = new BoardAuthorizationResponse();
+            $boardAuthorizationResponse->token = $tokenString;
+            $boardAuthorizationResponse->expired_interval = $expireTime;
+
+            return Controller::jsonEncodedResponse($boardAuthorizationResponse) ;
         }
 
         return self::notFoundResponse();
     }
 
-    private function authorizeUserConfiguration()
+    private function authorizeUser()
     {
         return self::notFoundResponse();
     }
 
-    private function authorizeUserDeviceConfiguration()
+    private function authorizeUserDevice()
     {
         $result = UserDeviceService::getInstance()->find($this->id);
         $response['status_code_header'] = 'HTTP/1.1 200 OK';
@@ -118,7 +103,7 @@ class AuthorizationController extends Controller
         return $response;
     }
 
-    private function authorizeServerConfiguration()
+    private function authorizeServer()
     {
         return self::notFoundResponse();
     }

@@ -1,7 +1,7 @@
 <?php
     namespace Src\Controller\Authorization\Request;
     
-    class ActivateBoardConfigurationRequest {
+    class AuthorizeBoardRequest {
         public $board_id;
         public $authorized_code;
 

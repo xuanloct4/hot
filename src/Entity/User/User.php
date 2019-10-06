@@ -5,7 +5,10 @@ namespace Src\Entity\User;
 class User
 {
     // table name
-    public static $table_name = "user";
+    public static function table()
+    {
+        return "user";
+    }
 
     // table columns
     public $id;

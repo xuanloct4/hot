@@ -5,8 +5,10 @@ namespace Src\Entity\Board;
 class Board
 {
     // table name
-    public static $table_name = "board";
-
+    public static function table()
+    {
+        return "board";
+    }
     // table columns
     public $id;
     public $name;

@@ -2,10 +2,15 @@
 
 namespace Src\Entity\Authorization;
 
-class Authorization
+use Src\Entity\Entity;
+
+class Authorization extends Entity
 {
     // table name
-    public static $table_name = "authorization";
+    public static function table()
+    {
+        return "authorization";
+    }
 
     // table columns
     public $id;

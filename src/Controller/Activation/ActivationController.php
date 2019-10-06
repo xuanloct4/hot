@@ -14,6 +14,7 @@ use Src\Service\Authorization\AuthorizationService;
 use Src\Service\Board\BoardConfigurationDTO;
 use Src\Service\Board\BoardConfigurationService;
 use Src\Service\Configuration\ConfigurationService;
+use Src\Service\Task\RunOnce\DBSeed;
 use Src\Service\User\DeviceService;
 
 class ActivationController extends Controller
@@ -59,26 +60,23 @@ class ActivationController extends Controller
     private function activateBoardConfiguration()
     {
         $activateRequest = new ActivateBoardConfigurationRequest($this->requestBody);
-        $a = AuthorizationService::getInstance()->findByIDAndCode($activateRequest->board_id, $activateRequest->authorized_code);
-        if (sizeof($a) > 0) {
-            $b = BoardConfigurationService::getInstance()->findByAuthID($a[0]->id);
-            if (sizeof($b) > 0) {
+        $a = AuthorizationService::getInstance()->findFirstByIDAndCode($activateRequest->board_id, $activateRequest->authorized_code);
+        if ($a != null) {
+            $boardConfigEntity = BoardConfigurationService::getInstance()->findByAuthID($a->id);
+            if ($boardConfigEntity != null) {
                 // Update status is_activated = true
-                $boardConfigEntity = $b[0];
                 $updateBoardConfigDTO = new BoardConfigurationDTO($boardConfigEntity);
                 $updateBoardConfigDTO->setIsActivated(b'1');
                 $updateBoardConfigDTO->setIsDeleted(b'0');
-                BoardConfigurationService::getInstance()->update($updateBoardConfigDTO);
+                BoardConfigurationService::getInstance()->update($updateBoardConfigDTO->toArray());
                 // TODO
                 //Log to log table
 
-                $boardConfiguration = new BoardConfigurationResponse($b[0]);
-                $configurations = ConfigurationService::getInstance()->findByConfigIds($b[0]->configuration, $b[0]->scopes);
+                $boardConfiguration = new BoardConfigurationResponse($boardConfigEntity);
+                $configurations = ConfigurationService::getInstance()->findByConfigIds($boardConfigEntity->configuration, $boardConfigEntity->scopes);
                 $boardConfiguration->configuration = ConfigurationResponse::toConfigurationResponses($configurations);
 
-                $response['status_code_header'] = 'HTTP/1.1 200 OK';
-                $response['body'] = json_encode($boardConfiguration);
-                return $response;
+                return Controller::jsonEncodedResponse($boardConfiguration);
             }
         }
 
@@ -94,14 +92,12 @@ class ActivationController extends Controller
     {
         $activateRequest = new ActivateDeviceConfigurationRequest($this->requestBody);
         $device = DeviceService::getInstance()->findByModelAndOS($activateRequest->model, $activateRequest->os);
-        if (sizeof($device) > 0) {
-            $deviceConfiguration = new DeviceConfigurationResponse($device[0]);
-            $configurations = ConfigurationService::getInstance()->findByConfigIds($device[0]->configuration, $device[0]->scopes);
+        if ($device != null) {
+            $deviceConfiguration = new DeviceConfigurationResponse($device);
+            $configurations = ConfigurationService::getInstance()->findByConfigIds($device->configuration, $device->scopes);
             $deviceConfiguration->configuration = ConfigurationResponse::toConfigurationResponses($configurations);
 
-            $response['status_code_header'] = 'HTTP/1.1 200 OK';
-            $response['body'] = json_encode($deviceConfiguration);
-            return $response;
+            return Controller::jsonEncodedResponse($deviceConfiguration);
         }
         return self::notFoundResponse();
     }

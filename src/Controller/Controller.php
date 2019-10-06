@@ -136,6 +136,17 @@ abstract class Controller
         return $response;
     }
 
+    public static function jsonEncodedResponse($bodyObject, $statusCodeHeader=null)
+    {
+        if ($statusCodeHeader==null) {
+            $response['status_code_header'] = 'HTTP/1.1 200 OK';
+        } else {
+            $response['status_code_header'] = $statusCodeHeader;
+        }
+        $response['body'] = json_encode($bodyObject);
+        return $response;
+    }
+
     abstract public function init();
 
     abstract protected function processGETRequest();
