@@ -1,7 +1,7 @@
 <?php
     namespace Src\Controller\Authorization\Request;
     
-    class AuthorizeBoardRequest {
+    class AuthorizeBoardRequest extends Request {
         public $board_id;
         public $authorized_code;
 

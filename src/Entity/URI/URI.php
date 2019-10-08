@@ -2,11 +2,15 @@
 
 namespace Src\Entity\URI;
 
-class URI
+use Src\Entity\Entity;
+
+class URI extends Entity
 {
     // table name
-    public static $table_name = "uri";
-
+    public static function table()
+    {
+        return "uri";
+    }
     // table columns
     public $id;
     public $representation;

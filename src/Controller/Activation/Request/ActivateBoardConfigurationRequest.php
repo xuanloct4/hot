@@ -1,7 +1,9 @@
 <?php
     namespace Src\Controller\Activation\Request;
 
-    class ActivateBoardConfigurationRequest {
+    use Src\Controller\Request;
+
+    class ActivateBoardConfigurationRequest extends Request {
         public $board_id;
         public $authorized_code;
 

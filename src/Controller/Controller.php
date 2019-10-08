@@ -2,7 +2,22 @@
 
 namespace Src\Controller;
 
-abstract class Controller
+interface iController
+{
+    public function init();
+
+    public function processRequest();
+
+    function processGETRequest();
+
+    function processPOSTRequest();
+
+    function processPUTRequest();
+
+    function processDELETERequest();
+}
+
+abstract class Controller implements iController
 {
     public $urlPattern;
     protected $uriComponents;
@@ -147,13 +162,5 @@ abstract class Controller
         return $response;
     }
 
-    abstract public function init();
 
-    abstract protected function processGETRequest();
-
-    abstract protected function processPOSTRequest();
-
-    abstract protected function processPUTRequest();
-
-    abstract protected function processDELETERequest();
 }

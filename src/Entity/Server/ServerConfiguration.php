@@ -2,11 +2,15 @@
 
 namespace Src\Entity\Server;
 
-class ServerConfiguration
+use Src\Entity\Entity;
+
+class ServerConfiguration extends Entity
 {
     // table name
-    public static $table_name = "server_configuration";
-
+    public static function table()
+    {
+        return "server_configuration";
+    }
     // table columns
     public $id;
     public $name;

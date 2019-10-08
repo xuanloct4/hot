@@ -2,8 +2,9 @@
 
 namespace Src\Entity\Authorization;
 
+use Src\Entity\Entity;
 
-class Token
+class Token extends Entity
 {
     // table name
     public static function table()

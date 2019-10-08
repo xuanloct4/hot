@@ -4,8 +4,9 @@ namespace Src\Service\Board;
 
 
 use Src\Entity\Board\BoardConfiguration;
+use Src\Service\DTO;
 
-class BoardConfigurationDTO
+class BoardConfigurationDTO extends DTO
 {
     private $id;
     private $board_id;

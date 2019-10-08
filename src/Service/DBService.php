@@ -2,18 +2,27 @@
 
 namespace Src\Service;
 
-
-use Src\Entity\Authorization\Authorization;
 use Src\System\Configuration;
 
-abstract class DBService
+interface iDBService {
+    public function sampleEntity();
+    public  static function getInstance();
+}
+
+abstract class DBService implements iDBService
 {
-    public abstract function table();
-    public abstract static function getInstance();
-    public abstract function fetchClass();
+
+    public function fetchClass(){
+        return get_class($this->sampleEntity());
+    }
 
     protected function dbConnection() {
         return Configuration::getInstance()->getConnection();
+    }
+
+    public function table() {
+        $class = $this->fetchClass();
+        return (new $class())::table();
     }
 
     // The constructor is private
@@ -23,6 +32,41 @@ abstract class DBService
     }
 
     // CRUD
+	public function executeDB($statement, $input)
+	{
+        try {
+            $statement = $this->dbConnection()->prepare($statement);
+            $statement->execute($input);
+        } catch (\PDOException $e) {
+            exit($e->getMessage());
+        }	
+	}
+	
+	public function executeAndFetchDB($statement, $input)
+	{
+        try {
+            $statement = $this->dbConnection()->prepare($statement);
+            $statement->execute($input);
+            $result = $statement->fetchAll(\PDO::FETCH_CLASS, $this->fetchClass());
+//            var_dump($result);
+            return $result;
+        } catch (\PDOException $e) {
+            exit($e->getMessage());
+        }	
+	}
+	
+	public function queryDB($statement)
+	{
+        try {
+            $statement = $this->db->query($statement);
+            //            $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
+            $result = $statement->fetchAll(\PDO::FETCH_CLASS, $this->fetchClass());
+            return $result;
+        } catch (\PDOException $e) {
+            exit($e->getMessage());
+        }
+	}
+	
     public function findAll()
     {
         $table = $this->table();
@@ -32,37 +76,13 @@ abstract class DBService
             FROM
             $table;
             ";
-
-        try {
-            $statement = $this->db->query($statement);
-            //            $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
-            $result = $statement->fetchAll(\PDO::FETCH_CLASS, $this->fetchClass());
-            return $result;
-        } catch (\PDOException $e) {
-            exit($e->getMessage());
-        }
+			
+		return $this->queryDB($statement);
     }
 
     public function find($id)
     {
-        $table = $this->table();
-        $statement = "
-            SELECT 
-            *
-            FROM
-            $table
-            WHERE id = ?;
-            ";
-
-        try {
-            $statement = $this->dbConnection()->prepare($statement);
-            $statement->execute(array($id));
-            //            $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
-            $result = $statement->fetchAll(\PDO::FETCH_CLASS, $this->fetchClass());
-            return $result;
-        } catch (\PDOException $e) {
-            exit($e->getMessage());
-        }
+        return $this->findBy(array("id" => (int)$id),true);
     }
 
     public function findOne($id)
@@ -89,43 +109,6 @@ abstract class DBService
             return $result[$size - 1];
         }
         return null;
-    }
-
-    public function findBy(Array $input, $isAnd)
-    {
-        $table = $this->table();
-
-        $where= "";
-        $keys = array_keys($input);
-        for ($i = 0; $i < sizeof($keys); $i++) {
-            if ($i > 0) {
-                if($isAnd == true) {
-                    $where = $where . "\n" . "AND" . " ";
-                } else {
-                    $where = $where . "\n" . "OR" . " ";
-                }
-            }
-            $where = $where.$keys[$i]." = :".$keys[$i];
-
-        }
-
-        $statement = "
-            SELECT
-            *
-            FROM
-            $table
-            WHERE $where;
-            ";
-//        var_dump($statement);
-        try {
-            $statement = $this->dbConnection()->prepare($statement);
-            $statement->execute($input);
-            $result = $statement->fetchAll(\PDO::FETCH_CLASS, $this->fetchClass());
-//            var_dump($result);
-            return $result;
-        } catch (\PDOException $e) {
-            exit($e->getMessage());
-        }
     }
 
     public function findByAND(Array $input)
@@ -187,6 +170,36 @@ abstract class DBService
 
     }
 
+    public function findBy(Array $input, $isAnd)
+    {
+//        var_dump($input);
+        $table = $this->table();
+
+        $where= "";
+        $keys = array_keys($input);
+        for ($i = 0; $i < sizeof($keys); $i++) {
+            if ($i > 0) {
+                if($isAnd == true) {
+                    $where = $where . "\n" . "AND" . " ";
+                } else {
+                    $where = $where . "\n" . "OR" . " ";
+                }
+            }
+            $where = $where.$keys[$i]." = :".$keys[$i];
+
+        }
+
+        $statement = "
+            SELECT
+            *
+            FROM
+            $table
+            WHERE $where;
+            ";
+//        var_dump($statement);
+        return $this->executeAndFetchDB($statement, $input);
+    }
+
     public function insert(Array $input)
     {
         $table = $this->table();
@@ -213,13 +226,9 @@ abstract class DBService
             $values;
             ";
 
-        try {
-            $statement = $this->db->prepare($statement);
-            $statement->execute($input);
-            return $this->db->lastInsertId();
-        } catch (\PDOException $e) {
-            exit($e->getMessage());
-        }
+	 	$this->executeDB($statement, $input);
+//	 	var_dump($this->dbConnection()->lastInsertId());
+		return $this->dbConnection()->lastInsertId();
     }
 
     public function update(Array $input)
@@ -249,13 +258,7 @@ abstract class DBService
             WHERE id = :id;
             ";
 //        var_dump($statement);
-        try {
-            $statement = $this->dbConnection()->prepare($statement);
-            $statement->execute($input);
-            return $statement->rowCount();
-        } catch (\PDOException $e) {
-            exit($e->getMessage());
-        }
+       return $this->executeAndFetchDB($statement, $input);
     }
 
     public function delete($id)
@@ -265,13 +268,7 @@ abstract class DBService
             DELETE FROM $table
             WHERE id = :id;
             ";
-
-        try {
-            $statement = $this->db->prepare($statement);
-            $statement->execute(array('id' => $id));
-            return $statement->rowCount();
-        } catch (\PDOException $e) {
-            exit($e->getMessage());
-        }
+		
+		return $this->executeDB($statement, array('id' => $id));
     }
 }

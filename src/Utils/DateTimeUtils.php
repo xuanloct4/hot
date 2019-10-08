@@ -31,8 +31,23 @@ class DateTimeUtils
         return $dateTime->format($dtFormat);
     }
 
-    public static function getCurrentTime(DateTimeZone $timezone = null) {
+    public static function convertStringToDateTimeDB($str, DateTimeZone $timezone = null)
+    {
+        return self::convertStringToDateTime($str, DateTime::DBFormat, $timezone);
+    }
+
+    public static function convertDateTimeToStringDB(\DateTime $dateTime, $format = null, DateTimeZone $timezone = null)
+    {
+        return self::convertStringToDateTime($dateTime, DateTime::DBFormat, $timezone);
+    }
+
+    public static function getCurrentTimeString($format = null, DateTimeZone $timezone = null) {
         $date = new \DateTime();
-        return self::convertDateTimeToString($date, null, $timezone);
+        return self::convertDateTimeToString($date, $format, $timezone);
+    }
+
+    public static function getCurrentTime($format = null, DateTimeZone $timezone = null) {
+        $str = self::getCurrentTimeString($format, $timezone);
+        return self::convertStringToDateTime($str, $format, $timezone);
     }
 }

@@ -2,7 +2,7 @@
     namespace Src\Controller\Activation\Request;
 
 
-    class ActivateDeviceConfigurationRequest {
+    class ActivateDeviceConfigurationRequest extends Request {
         public $os;
         public $model;
 

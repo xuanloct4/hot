@@ -1,71 +1,41 @@
 <?php
+
 namespace Src\Controller\Authorization;
 
 
-use Src\Controller\Activation\Request\ActivateBoardConfigurationRequest;
-use Src\Controller\Activation\Response\BoardConfigurationResponse;
-use Src\Controller\Activation\Response\ConfigurationResponse;
 use Src\Controller\Authorization\Request\AuthorizeBoardRequest;
 use Src\Controller\Authorization\Response\BoardAuthorizationResponse;
 use Src\Controller\Controller;
-use Src\Definition\Comparison;
+use Src\Controller\PreprocessingController;
 use Src\Definition\Configuration;
-use Src\Definition\Constants;
 use Src\Service\Authorization\AuthorizationService;
 use Src\Service\Authorization\TokenService;
-use Src\Service\Board\BoardConfigurationDTO;
-use Src\Service\Board\BoardConfigurationService;
-use Src\Service\Configuration\ConfigurationService;
-use Src\Service\Server\ServerConfigurationService;
 use Src\Service\User\UserDeviceService;
-use Src\Service\User\UserService;
 use Src\Utils\StringUtils;
 
-class AuthorizationController extends Controller
+class AuthorizationController extends PreprocessingController
 {
-    private $configuration;
-    public function init()
+    function processPOSTRequest()
     {
-        if (sizeof($this->uriComponents) > Configuration::BASE_URL_COMPONENT_NUMBER+1) {
-            $this->configuration = Configuration::getConfiguration($this->uriComponents[Configuration::BASE_URL_COMPONENT_NUMBER+1]);
+        switch ($this->configuration) {
+            case Configuration::BOARD:
+                return $this->authorizeBoard();
+            case Configuration::USER:
+                return $this->authorizeUser();
+            case Configuration::USER_DEVICE:
+                return $this->authorizeUserDevice();
+            case Configuration::SERVER:
+                return $this->authorizeServer();
         }
-    }
-
-    protected function processGETRequest()
-    {
-        // TODO: Implement processGETRequest() method.
-    }
-
-    protected function processPOSTRequest()
-    {
-            switch ($this->configuration) {
-                case Configuration::BOARD:
-                    return $this->authorizeBoard();
-                case Configuration::USER:
-                    return $this->authorizeUser();
-                case Configuration::USER_DEVICE:
-                    return $this->authorizeUserDevice();
-                case Configuration::SERVER:
-                    return $this->authorizeServer();
-            }
-    }
-
-    protected function processPUTRequest()
-    {
-        // TODO: Implement processPUTRequest() method.
-    }
-
-    protected function processDELETERequest()
-    {
-        // TODO: Implement processDELETERequest() method.
+        return self::notFoundResponse();
     }
 
     private function authorizeBoard()
     {
         $activateRequest = new AuthorizeBoardRequest($this->requestBody);
-        $a = AuthorizationService::getInstance()->findFirstByIDAndCode($activateRequest->board_id,$activateRequest->authorized_code);
+        $a = AuthorizationService::getInstance()->findFirstByIDAndCode($activateRequest->board_id, $activateRequest->authorized_code);
         if ($a != null) {
-            $tokens = StringUtils::trimStringToArrayWithNonEmptyElement(",",$a->tokens);
+            $tokens = StringUtils::trimStringToArrayWithNonEmptyElement(",", $a->tokens);
             // Find and delete all other token with the board id
             foreach ($tokens as $tokenId) {
                 TokenService::getInstance()->delete((int)$tokenId);
@@ -74,7 +44,7 @@ class AuthorizationController extends Controller
             // Generate new token
             $tokenString = StringUtils::generateRandomString(Configuration::TOKEN_LENGTH);
             $expireTime = Configuration::BOARD_TOKEN_EXPIRE_INTERVAL;
-            $tokenId =TokenService::getInstance()->insert(array("authorized_id" => (int)$a->id,
+            $tokenId = TokenService::getInstance()->insert(array("authorized_id" => (int)$a->id,
                 "token" => $tokenString,
                 "expired_interval" => $expireTime));
             AuthorizationService::getInstance()->update(array('id' => $a->id,
@@ -84,7 +54,7 @@ class AuthorizationController extends Controller
             $boardAuthorizationResponse->token = $tokenString;
             $boardAuthorizationResponse->expired_interval = $expireTime;
 
-            return Controller::jsonEncodedResponse($boardAuthorizationResponse) ;
+            return Controller::jsonEncodedResponse($boardAuthorizationResponse);
         }
 
         return self::notFoundResponse();

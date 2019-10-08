@@ -4,8 +4,9 @@ namespace Src\Service\Authorization;
 
 
 use Src\Entity\Authorization\Token;
+use Src\Service\DTO;
 
-class TokenDTO
+class TokenDTO extends DTO
 {
     private $id;
     private $authorized_id;
@@ -20,6 +21,13 @@ class TokenDTO
         $this->expired_interval = $token->expired_interval;
     }
 
+    public function toArray()
+    {
+        return array("id" => $this->id,
+            "authorized_id" => $this->authorized_id,
+            "token" => $this->token,
+            "expired_interval" => $this->expired_interval);
+    }
     /**
      * @return mixed
      */

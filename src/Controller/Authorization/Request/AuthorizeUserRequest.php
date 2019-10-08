@@ -3,7 +3,7 @@
 namespace Src\Controller\Authorization\Request;
 
 
-class AuthorizeUserRequest
+class AuthorizeUserRequest extends Request
 {
 
 }

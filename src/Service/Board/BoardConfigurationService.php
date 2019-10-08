@@ -10,9 +10,6 @@ class BoardConfigurationService extends DBService
     // Hold the class instance.
     private static $instance = null;
 
-    public function table() {
-        return BoardConfiguration::table();
-    }
     public static function getInstance()
     {
         if (self::$instance == null) {
@@ -22,8 +19,8 @@ class BoardConfigurationService extends DBService
         return self::$instance;
     }
 
-    public function fetchClass(){
-        return 'Src\Entity\Board\BoardConfiguration';
+    public function sampleEntity() {
+        return new BoardConfiguration();
     }
 
     // CRUD

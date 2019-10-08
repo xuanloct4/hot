@@ -4,7 +4,7 @@ namespace Src\Controller\Activation\Response;
 
 use Src\Entity\Configuration\Configuration;
 
-class ConfigurationResponse
+class ConfigurationResponse extends Response
 {
     public $files;
     public $uris;

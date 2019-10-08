@@ -2,11 +2,15 @@
 
 namespace Src\Entity\Scope;
 
-class ScopeDefinition
+use Src\Entity\Entity;
+
+class ScopeDefinition extends Entity
 {
     // table name
-    public static $table_name = "scope_definition";
-
+    public static function table()
+    {
+        return "scope_definition";
+    }
     // table columns
     public $id;
     public $level;

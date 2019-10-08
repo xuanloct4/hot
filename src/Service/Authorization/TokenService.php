@@ -12,10 +12,6 @@ class TokenService extends DBService
 
     // Hold the class instance.
     private static $instance = null;
-
-    public function table() {
-        return Token::table();
-    }
     public static function getInstance()
     {
         if (self::$instance == null) {
@@ -25,8 +21,8 @@ class TokenService extends DBService
         return self::$instance;
     }
 
-    public function fetchClass(){
-        return 'Src\Entity\Authorization\Token';
+    public function sampleEntity() {
+        return new Token();
     }
 
     // CRUD

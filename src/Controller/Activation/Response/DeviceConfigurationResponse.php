@@ -6,7 +6,7 @@ namespace Src\Controller\Activation\Response;
 use Src\Entity\User\Device;
 use Src\Utils\DateTimeUtils;
 
-class DeviceConfigurationResponse
+class DeviceConfigurationResponse extends Response
 {
     public $configuration;
     public $scopes;

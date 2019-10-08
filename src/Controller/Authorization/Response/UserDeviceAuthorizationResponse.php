@@ -3,7 +3,7 @@
 namespace Src\Controller\Authorization\Response;
 
 
-class UserDeviceAuthorizationResponse
+class UserDeviceAuthorizationResponse extends Response
 {
     public $token;
     public $expired_interval;

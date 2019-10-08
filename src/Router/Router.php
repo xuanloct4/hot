@@ -7,6 +7,8 @@ use Src\Definition\Comparison;
 use Src\Definition\Constants;
 use Src\Definition\DateTime;
 use Src\Definition\ScopePair;
+use Src\Service\Task\Object;
+use Src\Service\Task\Subject;
 use Src\Service\URI\URIService;
 use Src\Utils\Encryption\AES;
 use Src\Utils\Encryption\RSA;
@@ -45,9 +47,10 @@ class Router
     {
         $apis = URIService::getInstance()->findByType(Constants::API);
         foreach ($apis as $api) {
+//            var_dump($api);
             $matches = array();
             preg_match("/{$api->representation}/", $uri, $matches);
-            // var_dump($matches);
+//             var_dump($matches);
             if (sizeof($matches) > 0) {
                 $apiScopes = StringUtils::getScopes($api->scopes);
                 $clientScopes = StringUtils::getScopes($scopes);
@@ -92,6 +95,13 @@ class Router
 //        $plaintext = AES::safeDecrypt($ciphertext, $key);
 //        var_dump($ciphertext);
 //        var_dump($plaintext);
+
+//        $subject = new Subject();
+//        $o1 = new Object();
+//        $subject->attach($o1);
+//        $subject->setState(1);
+//        $subject->detach($o1);
+//        $subject->setState(2);
 
         $interceptor = new Interceptor();
         $interceptor->authorize($uri, $requestHeaders, $requestMethod, $requestParams, $requestBody);

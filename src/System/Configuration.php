@@ -83,7 +83,6 @@ QHEmbi4XQZQdiwTArHcQe16wkDJUoLvw
         // The expensive process (e.g.,db connection) goes here. = $dbConnection;
         $this->db = DatabaseConnector::getInstance()->getConnection();
         $this->baseAPIUrl = getenv('BASE_API_URL');
-        $this->baseAPIUrl = getenv('BASE_API_URL');
     }
 
     // The object is created from within the class itself

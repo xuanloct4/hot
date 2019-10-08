@@ -1,7 +1,14 @@
 <?php
     namespace Src\Entity;
-    
-    abstract class Entity{
+
+
+    interface iEntity
+    {
         // table name
-        public abstract static function table();
+        public static function table();
+    }
+
+    abstract class Entity implements iEntity
+    {
+
     }

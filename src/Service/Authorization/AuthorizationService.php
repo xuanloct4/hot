@@ -7,12 +7,10 @@ use Src\Service\DBService;
 
 class AuthorizationService extends DBService
 {
-
     // Hold the class instance.
     private static $instance = null;
-
-    public function table() {
-        return Authorization::table();
+    public function sampleEntity() {
+        return new Authorization();
     }
     public static function getInstance()
     {
@@ -21,10 +19,6 @@ class AuthorizationService extends DBService
         }
 
         return self::$instance;
-    }
-
-    public function fetchClass(){
-        return 'Src\Entity\Authorization\Authorization';
     }
 
     // CRUD

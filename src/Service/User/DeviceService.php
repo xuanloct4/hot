@@ -12,9 +12,6 @@ class DeviceService extends DBService
     // Hold the class instance.
     private static $instance = null;
 
-    public function table() {
-        return Device::table();
-    }
     public static function getInstance()
     {
         if (self::$instance == null) {
@@ -24,8 +21,9 @@ class DeviceService extends DBService
         return self::$instance;
     }
 
-    public function fetchClass(){
-        return 'Src\Entity\User\Device';
+    public function sampleEntity()
+    {
+        return new Device();
     }
 
     // CRUD

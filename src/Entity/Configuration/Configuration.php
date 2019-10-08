@@ -2,7 +2,9 @@
 
 namespace Src\Entity\Configuration;
 
-class Configuration
+use Src\Entity\Entity;
+
+class Configuration extends Entity
 {
     // table name
     public static function table()

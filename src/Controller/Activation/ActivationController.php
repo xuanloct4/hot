@@ -9,31 +9,17 @@ use Src\Controller\Activation\Response\BoardConfigurationResponse;
 use Src\Controller\Activation\Response\ConfigurationResponse;
 use Src\Controller\Activation\Response\DeviceConfigurationResponse;
 use Src\Controller\Controller;
+use Src\Controller\PreprocessingController;
 use Src\Definition\Configuration;
 use Src\Service\Authorization\AuthorizationService;
 use Src\Service\Board\BoardConfigurationDTO;
 use Src\Service\Board\BoardConfigurationService;
 use Src\Service\Configuration\ConfigurationService;
-use Src\Service\Task\RunOnce\DBSeed;
 use Src\Service\User\DeviceService;
 
-class ActivationController extends Controller
+class ActivationController extends PreprocessingController
 {
-    private $configuration;
-
-    public function init()
-    {
-        if (sizeof($this->uriComponents) > Configuration::BASE_URL_COMPONENT_NUMBER + 1) {
-            $this->configuration = Configuration::getConfiguration($this->uriComponents[Configuration::BASE_URL_COMPONENT_NUMBER + 1]);
-        }
-    }
-
-    protected function processGETRequest()
-    {
-        // TODO: Implement processGETRequest() method.
-    }
-
-    protected function processPOSTRequest()
+    function processPOSTRequest()
     {
         switch ($this->configuration) {
             case Configuration::BOARD:
@@ -45,16 +31,7 @@ class ActivationController extends Controller
             case Configuration::SERVER:
                 return $this->activateServerConfiguration();
         }
-    }
-
-    protected function processPUTRequest()
-    {
-        // TODO: Implement processPUTRequest() method.
-    }
-
-    protected function processDELETERequest()
-    {
-        // TODO: Implement processDELETERequest() method.
+        return self::notFoundResponse();
     }
 
     private function activateBoardConfiguration()

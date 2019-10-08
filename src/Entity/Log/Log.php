@@ -2,10 +2,15 @@
 
 namespace Src\Entity\Log;
 
-class Log
+use Src\Entity\Entity;
+
+class Log extends Entity
 {
     // table name
-    public static $table_name = "log";
+    public static function table()
+    {
+        return "log";
+    }
 
     // table columns
     public $id;

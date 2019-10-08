@@ -2,11 +2,15 @@
 
 namespace Src\Entity\Topo;
 
-class Contact
+use Src\Entity\Entity;
+
+class Contact extends Entity
 {
     // table name
-    public static $table_name = "contact";
-
+    public static function table()
+    {
+        return "contact";
+    }
     // table columns
     public $id;
     public $io;

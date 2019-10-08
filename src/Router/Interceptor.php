@@ -6,6 +6,7 @@ use MyCLabs\Enum\Enum;
 use Src\Definition\Comparison;
 use Src\Definition\Configuration;
 use Src\Definition\Constants;
+use Src\Definition\DateTime;
 use Src\Definition\ScopePair;
 use Src\Service\Authorization\AuthorizationService;
 use Src\Service\Authorization\TokenService;
@@ -13,6 +14,7 @@ use Src\Service\Board\BoardConfigurationService;
 use Src\Service\Server\ServerConfigurationService;
 use Src\Service\User\UserDeviceService;
 use Src\Service\User\UserService;
+use Src\Utils\DateTimeUtils;
 
 class Interceptor
 {
@@ -22,37 +24,6 @@ class Interceptor
     public $requestParams;
     public $requestBody;
     public $scopes;
-
-//    // Hold the class instance.
-//    private static $instance = null;
-//
-//    // The constructor is private
-//    // to prevent initiation with outer code.
-//    private function __construct()
-//    {
-//        // The expensive process (e.g.,db connection) goes here. = $dbConnection;
-//    }
-//
-//    // The object is created from within the class itself
-//    // only if the class has no instance.
-//    public static function getInstance()
-//    {
-//        if (self::$instance == null) {
-//            self::$instance = new Interceptor();
-//        }
-//
-//        return self::$instance;
-//    }
-
-
-//    public function init($uriComponents, $requestHeaders, $requestMethod, $requestParams, $requestBody)
-//    {
-//        $this->uriComponents = $uriComponents;
-//        $this->requestHeaders = $requestHeaders;
-//        $this->requestMethod = $requestMethod;
-//        $this->requestParams = $requestParams;
-//        $this->requestBody = $requestBody;
-//    }
 
     public function authorize($uriComponents, $requestHeaders, $requestMethod, $requestParams, $requestBody)
     {
@@ -68,9 +39,9 @@ class Interceptor
         // else redirect to api with that path if api scope is (0,0,0,0)
 
         foreach ($requestHeaders as $name => $value) {
-            if (strcasecmp($name, Constants::ChanelID) == 0) {
+            if (strcmp($name, Constants::ChanelID) == 0) {
                 $chanelId = $value;
-            } else if (strcasecmp($name, Constants::Authorization) == 0) {
+            } else if (strcmp($name, Constants::Authorization) == 0) {
                 $accessToken = $value;
             }
         }
@@ -79,38 +50,46 @@ class Interceptor
         try {
             $token = TokenService::getInstance()->findFirstByToken($accessToken);
             if ($token != null) {
-                $authorization = AuthorizationService::getInstance()->find($token->authorized_id);
-                foreach ($authorization as $item) {
-                    $auth_id = $item->id;
-                    switch ($chanelId) {
-                        case Configuration::BOARD:
-                            $boardConfiguration = BoardConfigurationService::getInstance()->findByAuthID($auth_id);
-                            if (sizeof($boardConfiguration) > 0) {
-                                $this->requestHeaders[Constants::BoardID] = $boardConfiguration[0]->id;
-                                $this->scopes = $boardConfiguration[0]->scopes;
+                $tokenDate = DateTimeUtils::convertStringToDateTimeDB($token->created_timestamp);
+                $currentDate = DateTimeUtils::getCurrentTime();
+                if ($tokenDate != false) {
+                    $interval = $currentDate->getTimestamp() - $tokenDate->getTimestamp();
+                    $expire = $token->expired_interval;
+                    if ($expire == null || $expire < 0 || $interval < $expire) {
+                        $authorization = AuthorizationService::getInstance()->find($token->authorized_id);
+                        foreach ($authorization as $item) {
+                            $auth_id = $item->id;
+                            switch ($chanelId) {
+                                case Configuration::BOARD:
+                                    $boardConfiguration = BoardConfigurationService::getInstance()->findByAuthID($auth_id);
+                                    if ($boardConfiguration != null) {
+                                        $this->requestHeaders[Constants::BoardID] = $boardConfiguration->id;
+                                        $this->scopes = $boardConfiguration->scopes;
+                                    }
+                                    break;
+                                case Configuration::USER:
+                                    $userConfiguration = UserService::getInstance()->findByAuthID($auth_id);
+                                    if ($userConfiguration != null) {
+                                        $this->requestHeaders[Constants::UserID] = $userConfiguration->id;
+                                        $this->scopes = $userConfiguration->scopes;
+                                    }
+                                    break;
+                                case Configuration::USER_DEVICE:
+                                    $userDeviceConfiguration = UserDeviceService::getInstance()->findByAuthID($auth_id);
+                                    if ($userDeviceConfiguration != null) {
+                                        $this->requestHeaders[Constants::UserDeviceID] = $userDeviceConfiguration->id;
+                                        $this->scopes = $userDeviceConfiguration->scopes;
+                                    }
+                                    break;
+                                case Configuration::SERVER:
+                                    $serverConfiguration = ServerConfigurationService::getInstance()->findByAuthID($auth_id);
+                                    if ($serverConfiguration != null) {
+                                        $this->requestHeaders[Constants::ServerID] = $serverConfiguration->id;
+                                        $this->scopes = $serverConfiguration->scopes;
+                                    }
+                                    break;
                             }
-                            break;
-                        case Configuration::USER:
-                            $userConfiguration = UserService::getInstance()->findByAuthID($auth_id);
-                            if (sizeof($userConfiguration) > 0) {
-                                $this->requestHeaders[Constants::UserID] = $userConfiguration[0]->id;
-                                $this->scopes = $userConfiguration[0]->scopes;
-                            }
-                            break;
-                        case Configuration::USER_DEVICE:
-                            $userDeviceConfiguration = UserDeviceService::getInstance()->findByAuthID($auth_id);
-                            if (sizeof($userDeviceConfiguration) > 0) {
-                                $this->requestHeaders[Constants::UserDeviceID] = $userDeviceConfiguration[0]->id;
-                                $this->scopes = $userDeviceConfiguration[0]->scopes;
-                            }
-                            break;
-                        case Configuration::SERVER:
-                            $serverConfiguration = ServerConfigurationService::getInstance()->findByAuthID($auth_id);
-                            if (sizeof($serverConfiguration) > 0) {
-                                $this->requestHeaders[Constants::ServerID] = $serverConfiguration[0]->id;
-                                $this->scopes = $serverConfiguration[0]->scopes;
-                            }
-                            break;
+                        }
                     }
                 }
             }

@@ -140,7 +140,7 @@ class StringUtils
         }
     }
 
-    public static function generateRandomString($length) {
+    public static function generateRandomString($length=12) {
         $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $randomString = '';
 
@@ -150,5 +150,21 @@ class StringUtils
         }
 
         return $randomString;
+    }
+
+    public static function compareStringIgnoreCase($str1, $str2) {
+        if (strcmp($str1, $str2) == 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static function compareString($str1, $str2) {
+        if (strcasecmp($str1, $str2) == 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

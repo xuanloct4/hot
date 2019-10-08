@@ -2,7 +2,9 @@
 
 namespace Src\Entity\Board;
 
-class Board
+use Src\Entity\Entity;
+
+class Board extends Entity
 {
     // table name
     public static function table()

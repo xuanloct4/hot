@@ -2,11 +2,15 @@
 
 namespace Src\Entity\Sensor;
 
-class Sensor
+use Src\Entity\Entity;
+
+class Sensor extends Entity
 {
     // table name
-    public static $table_name = "sensor";
-
+    public static function table()
+    {
+        return "sensor";
+    }
     // table columns
     public $id;
     public $name;

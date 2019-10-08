@@ -3,6 +3,7 @@ CREATE DATABASE hot
   COLLATE utf8mb4_unicode_ci;
 use hot;
 
+## Tables
 # user
 CREATE TABLE IF NOT EXISTS `user` (
   id                       INT        NOT NULL AUTO_INCREMENT,
@@ -18,7 +19,8 @@ CREATE TABLE IF NOT EXISTS `user` (
   `is_deleted`             TINYINT             DEFAULT b'0',
   `is_activated`           TINYINT             DEFAULT b'0',
   `created_timestamp`      TIMESTAMP           DEFAULT CURRENT_TIMESTAMP,
-  `last_updated_timestamp` TIMESTAMP           DEFAULT CURRENT_TIMESTAMP,
+  `last_updated_timestamp` TIMESTAMP           DEFAULT CURRENT_TIMESTAMP
+  ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id)
 )
   ENGINE = INNODB;
@@ -41,7 +43,8 @@ CREATE TABLE IF NOT EXISTS user_device (
   `is_deleted`             TINYINT             DEFAULT b'0',
   `is_activated`           TINYINT             DEFAULT b'0',
   `created_timestamp`      TIMESTAMP           DEFAULT CURRENT_TIMESTAMP,
-  `last_updated_timestamp` TIMESTAMP           DEFAULT CURRENT_TIMESTAMP,
+  `last_updated_timestamp` TIMESTAMP           DEFAULT CURRENT_TIMESTAMP
+  ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id)
 )
   ENGINE = INNODB;
@@ -75,7 +78,8 @@ CREATE TABLE IF NOT EXISTS server_configuration (
   `is_deleted`             TINYINT             DEFAULT b'0',
   `is_activated`           TINYINT             DEFAULT b'0',
   `created_timestamp`      TIMESTAMP           DEFAULT CURRENT_TIMESTAMP,
-  `last_updated_timestamp` TIMESTAMP           DEFAULT CURRENT_TIMESTAMP,
+  `last_updated_timestamp` TIMESTAMP           DEFAULT CURRENT_TIMESTAMP
+  ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id)
 )
   ENGINE = INNODB;
@@ -95,26 +99,27 @@ CREATE TABLE IF NOT EXISTS board_configuration (
   `is_deleted`              TINYINT             DEFAULT b'0',
   `is_activated`            TINYINT             DEFAULT b'0',
   `created_timestamp`       TIMESTAMP           DEFAULT CURRENT_TIMESTAMP,
-  `last_updated_timestamp`  TIMESTAMP           DEFAULT CURRENT_TIMESTAMP,
+  `last_updated_timestamp`  TIMESTAMP           DEFAULT CURRENT_TIMESTAMP
+  ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id)
 )
   ENGINE = INNODB;
 
 # board
 CREATE TABLE IF NOT EXISTS board (
-  id                  INT      NOT NULL AUTO_INCREMENT,
-  `name`              TEXT     NOT NULL,
-  `description`       LONGTEXT          DEFAULT NULL,
-  `model`             TEXT     NOT NULL,
-  `manufacturer`      TEXT              DEFAULT NULL,
-  `version`           TEXT     NOT NULL,
-  `firmware`          TEXT              DEFAULT NULL,
-  `os`                TEXT              DEFAULT NULL,
-  `image`             MEDIUMTEXT        DEFAULT NULL,
-  `sensors`           LONGTEXT NOT NULL,
-  `boards`            LONGTEXT          DEFAULT NULL,
-  `public_contacts`   LONGTEXT          DEFAULT NULL,
-  `internal_contacts` LONGTEXT          DEFAULT NULL,
+  id                  INT  NOT NULL AUTO_INCREMENT,
+  `name`              TEXT NOT NULL,
+  `description`       LONGTEXT      DEFAULT NULL,
+  `model`             TEXT NOT NULL,
+  `manufacturer`      TEXT          DEFAULT NULL,
+  `version`           TEXT NOT NULL,
+  `firmware`          TEXT          DEFAULT NULL,
+  `os`                TEXT          DEFAULT NULL,
+  `image`             MEDIUMTEXT    DEFAULT NULL,
+  `sensors`           LONGTEXT      DEFAULT NULL,
+  `boards`            LONGTEXT      DEFAULT NULL,
+  `public_contacts`   LONGTEXT      DEFAULT NULL,
+  `internal_contacts` LONGTEXT      DEFAULT NULL,
   PRIMARY KEY (id)
 )
   ENGINE = INNODB;
@@ -207,7 +212,8 @@ CREATE TABLE IF NOT EXISTS log (
   `level`                  INT  NOT NULL,
   `scopes`                 TEXT          DEFAULT NULL,
   `created_timestamp`      TIMESTAMP     DEFAULT CURRENT_TIMESTAMP,
-  `last_updated_timestamp` TIMESTAMP     DEFAULT CURRENT_TIMESTAMP,
+  `last_updated_timestamp` TIMESTAMP     DEFAULT CURRENT_TIMESTAMP
+  ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id)
 )
   ENGINE = INNODB;
@@ -225,7 +231,8 @@ CREATE TABLE IF NOT EXISTS configuration (
   `is_deleted`             TINYINT               DEFAULT b'0',
   `is_activated`           TINYINT               DEFAULT b'0',
   `created_timestamp`      TIMESTAMP             DEFAULT CURRENT_TIMESTAMP,
-  `last_updated_timestamp` TIMESTAMP             DEFAULT CURRENT_TIMESTAMP,
+  `last_updated_timestamp` TIMESTAMP             DEFAULT CURRENT_TIMESTAMP
+  ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id)
 )
   ENGINE = INNODB;
@@ -238,7 +245,8 @@ CREATE TABLE IF NOT EXISTS authorization (
   `authorized_code`        TEXT                NOT NULL,
   `tokens`                 LONGTEXT                     DEFAULT NULL,
   `created_timestamp`      TIMESTAMP                    DEFAULT CURRENT_TIMESTAMP,
-  `last_updated_timestamp` TIMESTAMP                    DEFAULT CURRENT_TIMESTAMP,
+  `last_updated_timestamp` TIMESTAMP                    DEFAULT CURRENT_TIMESTAMP
+  ON UPDATE CURRENT_TIMESTAMP,
   `expired_interval`       INT                          DEFAULT NULL,
   PRIMARY KEY (id)
 )
@@ -260,4 +268,76 @@ CREATE TABLE IF NOT EXISTS token (
   PRIMARY KEY (id)
 )
   ENGINE = INNODB;
+
+# uri api
+INSERT IGNORE INTO `hot`.`uri` (`representation`,
+                                `content`,
+                                `virtual_address`,
+                                `physical_address`,
+                                `authorized_id`,
+                                `scopes`,
+                                `type`)
+VALUES ('^((\\/){1,}hot(\\/){1,}public(\\/){1,}api(.php){0,1}(\\/){1,}(board|user|device|server){1}(\\/){1,}activate(\\/)*)',
+        'Src\\Controller\\Activation\\ActivationController',
+        NULL,
+        NULL,
+        NULL,
+        '0,0,0,0',
+        'api');
+INSERT IGNORE INTO `hot`.`uri` (`representation`,
+                                `content`,
+                                `virtual_address`,
+                                `physical_address`,
+                                `authorized_id`,
+                                `scopes`,
+                                `type`)
+VALUES ('^((\\/){1,}hot(\\/){1,}public(\\/){1,}api(.php){0,1}(\\/){1,}(board|user|device|server){1}(\\/){1,}authorize(\\/)*)',
+        'Src\\Controller\\Authorization\\AuthorizationController',
+        NULL,
+        NULL,
+        NULL,
+        '0,0,0,0',
+        'api');
+INSERT IGNORE INTO `hot`.`uri` (`representation`,
+                                `content`,
+                                `virtual_address`,
+                                `physical_address`,
+                                `authorized_id`,
+                                `scopes`,
+                                `type`)
+VALUES ('^((\\/){1,}hot(\\/){1,}public(\\/){1,}api(.php){0,1}(\\/){1,}(board|user|device|server){1}(\\/){1,}checking(\\/)*)',
+        'Src\\Controller\\Configuration\\CheckingController',
+        NULL,
+        NULL,
+        NULL,
+        '1,0,0,0|0,1,0,0|0,0,1,0|0,0,0,1',
+        'api');
+INSERT IGNORE INTO `hot`.`uri` (`representation`,
+                                `content`,
+                                `virtual_address`,
+                                `physical_address`,
+                                `authorized_id`,
+                                `scopes`,
+                                `type`)
+VALUES ('^((\\/){1,}hot(\\/){1,}public(\\/){1,}api(.php){0,1}(\\/){1,}(board|user|device|server){1}(\\/){1,}configuration(\\/)*)',
+        'Src\\Controller\\Configuration\\ConfigurationController',
+        NULL,
+        NULL,
+        NULL,
+        '1,0,0,0|0,1,0,0|0,0,1,0|0,0,0,1',
+        'api');
+INSERT IGNORE INTO `hot`.`uri` (`representation`,
+                                `content`,
+                                `virtual_address`,
+                                `physical_address`,
+                                `authorized_id`,
+                                `scopes`,
+                                `type`)
+VALUES ('^((\\/){1,}hot(\\/){1,}public(\\/){1,}api(.php){0,1}(\\/){1,}(board|user|device|server){1}(\\/){1,}profile(\\/)*)',
+        'Src\\Controller\\Profile\\ProfileController',
+        NULL,
+        NULL,
+        NULL,
+        '1,0,0,0|0,1,0,0|0,0,1,0|0,0,0,1',
+        'api');
 

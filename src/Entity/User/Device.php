@@ -3,7 +3,9 @@
 namespace Src\Entity\User;
 
 
-class Device
+use Src\Entity\Entity;
+
+class Device extends Entity
 {
     // table name
     public static function table()
