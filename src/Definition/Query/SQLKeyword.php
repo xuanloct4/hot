@@ -1,6 +1,6 @@
 <?php
 
-namespace Src\Definition;
+namespace Src\Definition\Query;
 
 
 class SQLKeyword extends Enum
@@ -14,5 +14,4 @@ class SQLKeyword extends Enum
     const min = "MIN";
     const desc = "DESC";
     const asc = "ASC";
-
 }

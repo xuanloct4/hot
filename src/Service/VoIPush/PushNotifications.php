@@ -1,8 +1,10 @@
 <?php
+namespace Src\Service\VoIPush;
+
 // Server file
 class PushNotifications {
     // (Android)API access key from Google API Console.
-    private static $API_ACCESS_KEY = "AIzaSyDG3fYAj1uW7VB-wejaMJyJXiO5JagAsYI";
+    private static $API_ACCESS_KEY = "AAAAmRQXVuU:APA91bFlvXHGFOdYHrjBHbR9UYANuD4Q_cpn2lCfu6rQgpD_An7KC-C1Q1OrEixl9sWPhittL5LVw5dYgpXAIY9WYCIv11KpbLoM0_ETIj2T-zVGa4n1erqblcT34nN3lRg--oaUNV-z";
     // (iOS) Private key passphrase.
     private static $passphrase = "joashp";
     private static $pushCertAndKeyPemFile = "PushCertificateAndKey.pem";
@@ -17,7 +19,7 @@ class PushNotifications {
 
         // Sends Push notification for Android users
     public function android($data, $reg_id) {
-            $url = 'https://android.googleapis.com/gcm/send';
+            $url = 'https://fcm.googleapis.com/fcm/send';
             $message = array(
                 'title' => $data['mtitle'],
                 'message' => $data['mdesc'],
@@ -35,10 +37,12 @@ class PushNotifications {
 
             $fields = array(
                 'registration_ids' => array($reg_id),
-                'data' => $message
+                'data' => $message,
+                'priority' => 'high'
             );
 
-            return self::useCurl($url, $headers, json_encode($fields));
+            $result = self::useCurl($url, $headers, json_encode($fields));
+            return $result;
         }
 
     // Sends Push's toast notification for Windows Phone 8 users
@@ -116,7 +120,7 @@ class PushNotifications {
 
     }
 
-    // Curl 
+    // Curl
     private function useCurl($url, $headers, $fields) {
             // Open connection
             $ch = curl_init();

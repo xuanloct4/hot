@@ -37,7 +37,7 @@ class ActivationController extends PreprocessingController
     private function activateBoardConfiguration()
     {
         $activateRequest = new ActivateBoardConfigurationRequest($this->requestBody);
-        $a = AuthorizationService::getInstance()->findFirstByIDAndCode($activateRequest->board_id, $activateRequest->authorized_code);
+        $a = AuthorizationService::getInstance()->findFirstByIDAndCode($activateRequest->board_id, $activateRequest->authorized_code, $this->configuration);
         if ($a != null) {
             $boardConfigEntity = BoardConfigurationService::getInstance()->findByAuthID($a->id);
             if ($boardConfigEntity != null) {

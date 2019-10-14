@@ -1,9 +1,10 @@
 <?php
-    namespace Src\Controller\Authorization\Request;
-    
+    namespace Src\Controller\Configuration\Request;
+
     use Src\Controller\Request;
 
-    class AuthorizeBoardRequest extends Request {
+    class BoardConfigurationRequest extends Request
+    {
         public $board_id;
         public $authorized_code;
 

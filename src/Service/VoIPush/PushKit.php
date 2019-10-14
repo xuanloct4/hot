@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: jinya
- * Date: 2018/1/31
- * Time: 下午2:41
- */
 
 class PushKit
 {

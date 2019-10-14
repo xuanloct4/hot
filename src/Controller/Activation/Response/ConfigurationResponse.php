@@ -2,6 +2,7 @@
 
 namespace Src\Controller\Activation\Response;
 
+use Src\Controller\Response;
 use Src\Entity\Configuration\Configuration;
 
 class ConfigurationResponse extends Response

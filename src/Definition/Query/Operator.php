@@ -1,6 +1,6 @@
 <?php
 
-namespace Src\Definition;
+namespace Src\Definition\Query;
 
 
 class Operator extends Enum
@@ -12,12 +12,15 @@ class Operator extends Enum
     const greater_than_or_equal = ">=";
     const smaller_than_or_equal = "<=";
     const and_ = "AND";
-    const or_ = "AND";
+    const or_ = "OR";
     const in = "IN";
     const not_in = "NOT IN";
+    const not_between = "NOT BETWEEN";
     const between = "BETWEEN";
     const is_null = "IS NULL";
     const like = "LIKE";
     const tuple = "(%)";
     const all = "*";
+
+
 }

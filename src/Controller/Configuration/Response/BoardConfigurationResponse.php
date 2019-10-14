@@ -1,12 +1,12 @@
 <?php
-    namespace Src\Controller\Activation\Response;
+    namespace Src\Controller\Configuration\Response;
 
-    use Src\Controller\Request;
     use Src\Controller\Response;
     use Src\Entity\Board\BoardConfiguration;
     use Src\Utils\DateTimeUtils;
 
-    class BoardConfigurationResponse extends Response {
+    class BoardConfigurationResponse extends Response
+    {
 //        public $server_configuration_id;
 //        public $user_device_id;
 //        public $user_id;

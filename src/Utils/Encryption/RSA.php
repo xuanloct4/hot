@@ -9,10 +9,11 @@ class RSA
     public static function encrypt($data)
     {
         $encrypted = "";
+
         if (openssl_public_encrypt($data, $encrypted, Configuration::getInstance()->getPubkeyRSA()))
             $data = base64_encode($encrypted);
         else
-            throw new Exception('Unable to encrypt data. Perhaps it is bigger than the key size?');
+            throw new \Exception('Unable to encrypt data. Perhaps it is bigger than the key size?');
         return $data;
     }
 

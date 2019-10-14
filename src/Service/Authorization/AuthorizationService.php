@@ -2,6 +2,7 @@
 
 namespace Src\Service\Authorization;
 
+use Src\Definition\Configuration;
 use Src\Entity\Authorization\Authorization;
 use Src\Service\DBService;
 
@@ -22,9 +23,14 @@ class AuthorizationService extends DBService
     }
 
     // CRUD
-    public function findFirstByIDAndCode($uuid, $code)
+    public function findFirstByIDAndCode($uuid, $code, $configuration)
     {
-        $result = $this->findFirstByAND(array("uuid" => $uuid, "authorized_code" => $code));
+        $realUUID = "$configuration"."_"."$uuid";
+        $result = $this->findFirstByAND(array("uuid" => $realUUID, "authorized_code" => $code));
         return $result;
+    }
+
+    public function updateTokens() {
+
     }
 }

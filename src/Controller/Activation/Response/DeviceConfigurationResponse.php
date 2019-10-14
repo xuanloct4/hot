@@ -3,6 +3,7 @@
 namespace Src\Controller\Activation\Response;
 
 
+use Src\Controller\Response;
 use Src\Entity\User\Device;
 use Src\Utils\DateTimeUtils;
 
@@ -21,6 +22,6 @@ class DeviceConfigurationResponse extends Response
         $this->is_activated = $device->is_activated;
         $this->is_deleted = $device->is_deleted;
 
-        $this->servertime = DateTimeUtils::getCurrentTime();
+        $this->servertime = DateTimeUtils::getCurrentTimeString();
     }
 }

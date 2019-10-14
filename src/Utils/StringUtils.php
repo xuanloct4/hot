@@ -26,16 +26,15 @@ class StringUtils
     }
 
     public static function trimStringToArrayWithNonEmptyElement($delimiter,$str) {
-        $arr = explode($delimiter, $str);
-        $s = -1;
-        for ($i = 0; $i < sizeof($arr); $i++) {
-            $trimmed = trim($arr[$i]);
+        $separatedComponentsArray = explode($delimiter, $str);
+        $nonEmptyElementsArray = array();
+        for ($i = 0; $i < sizeof($separatedComponentsArray); $i++) {
+            $trimmed = trim($separatedComponentsArray[$i]);
             if (strcmp("",$trimmed) != 0) {
-                $s = $s + 1;
-                $arr[$s] = $trimmed;
+                array_push($nonEmptyElementsArray, $trimmed);
             }
         }
-        return $arr;
+        return $nonEmptyElementsArray;
     }
 
     public static function compareVersion($v1, $v2) {
@@ -162,6 +161,19 @@ class StringUtils
 
     public static function compareString($str1, $str2) {
         if (strcasecmp($str1, $str2) == 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static function arrayToString($separator,$arr) {
+        $str = implode($separator, $arr);
+        return $str;
+    }
+
+    public static function isNullOrEmpty($str) {
+        if ($str == null || strcmp("", trim($str)) == 0) {
             return true;
         } else {
             return false;

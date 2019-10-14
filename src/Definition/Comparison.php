@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by IntelliJ IDEA.
- * User: loctv
- * Date: 10/1/19
- * Time: 10:09 AM
- */
 
 namespace Src\Definition;
 

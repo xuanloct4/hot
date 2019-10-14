@@ -4,6 +4,8 @@ namespace Src\Controller\Authorization;
 
 
 use Src\Controller\Authorization\Request\AuthorizeBoardRequest;
+use Src\Controller\Authorization\Request\AuthorizeUserDeviceRequest;
+use Src\Controller\Authorization\Request\AuthorizeUserRequest;
 use Src\Controller\Authorization\Response\BoardAuthorizationResponse;
 use Src\Controller\Controller;
 use Src\Controller\PreprocessingController;
@@ -33,48 +35,71 @@ class AuthorizationController extends PreprocessingController
     private function authorizeBoard()
     {
         $activateRequest = new AuthorizeBoardRequest($this->requestBody);
-        $a = AuthorizationService::getInstance()->findFirstByIDAndCode($activateRequest->board_id, $activateRequest->authorized_code);
-        if ($a != null) {
-            $tokens = StringUtils::trimStringToArrayWithNonEmptyElement(",", $a->tokens);
-            // Find and delete all other token with the board id
-            foreach ($tokens as $tokenId) {
-                TokenService::getInstance()->delete((int)$tokenId);
-            }
-
-            // Generate new token
-            $tokenString = StringUtils::generateRandomString(Configuration::TOKEN_LENGTH);
-            $expireTime = Configuration::BOARD_TOKEN_EXPIRE_INTERVAL;
-            $tokenId = TokenService::getInstance()->insert(array("authorized_id" => (int)$a->id,
-                "token" => $tokenString,
-                "expired_interval" => $expireTime));
-            AuthorizationService::getInstance()->update(array('id' => $a->id,
-                "tokens" => "$tokenId"));
-
-            $boardAuthorizationResponse = new BoardAuthorizationResponse();
-            $boardAuthorizationResponse->token = $tokenString;
-            $boardAuthorizationResponse->expired_interval = $expireTime;
-
-            return Controller::jsonEncodedResponse($boardAuthorizationResponse);
-        }
-
-        return self::notFoundResponse();
+        $expireTime = Configuration::BOARD_TOKEN_EXPIRE_INTERVAL;
+        $response = $this->generateNewToken($activateRequest->board_id, $activateRequest->authorized_code, $expireTime, true);
+        return $response;
     }
 
     private function authorizeUser()
     {
-        return self::notFoundResponse();
+        $activateRequest = new AuthorizeUserRequest($this->requestBody);
+        $expireTime = Configuration::USER_TOKEN_EXPIRE_INTERVAL;
+        $response = $this->generateNewToken($activateRequest->uuid, $activateRequest->authorized_code, $expireTime, false);
+        return $response;
     }
 
     private function authorizeUserDevice()
     {
-        $result = UserDeviceService::getInstance()->find($this->id);
-        $response['status_code_header'] = 'HTTP/1.1 200 OK';
-        $response['body'] = json_encode($result);
+        $activateRequest = new AuthorizeUserDeviceRequest($this->requestBody);
+        $expireTime = Configuration::USER_DEVICE_TOKEN_EXPIRE_INTERVAL;
+        $response = $this->generateNewToken($activateRequest->device_id, $activateRequest->authorized_code, $expireTime, true);
         return $response;
     }
 
     private function authorizeServer()
     {
+        return self::notFoundResponse();
+    }
+
+    private function generateNewToken($uuid, $code, $expireTime, $isDeleteOldToken)
+    {
+        $a = AuthorizationService::getInstance()->findFirstByIDAndCode($uuid, $code, $this->configuration);
+        if ($a != null) {
+            $tokens = StringUtils::trimStringToArrayWithNonEmptyElement(",", $a->tokens);
+            // TODO
+            // Log
+
+            if ($isDeleteOldToken) {
+                // Find and delete all other token with the board id
+                foreach ($tokens as $tokenId) {
+                    TokenService::getInstance()->delete((int)$tokenId);
+                }
+            }
+
+            // Generate new token
+            $tokenString = StringUtils::generateRandomString(Configuration::TOKEN_LENGTH);
+            $tokenId = TokenService::getInstance()->insert(array("authorized_id" => (int)$a->id,
+                "token" => $tokenString,
+                "expired_interval" => $expireTime));
+
+            if ($isDeleteOldToken) {
+                $tokens = array($tokenId);
+            } else {
+                array_push($tokens, "$tokenId");
+            }
+
+            $updatedTokens = StringUtils::arrayToString(",",$tokens);
+            AuthorizationService::getInstance()->update(array('id' => $a->id,
+                "tokens" => $updatedTokens));
+
+            $boardAuthorizationResponse = new BoardAuthorizationResponse();
+            $boardAuthorizationResponse->token = $tokenString;
+            $boardAuthorizationResponse->expired_interval = $expireTime;
+            $boardAuthorizationResponse->number_of_valid_access = sizeof($tokens);
+
+            return Controller::jsonEncodedResponse($boardAuthorizationResponse);
+        }
+
         return self::notFoundResponse();
     }
 }
