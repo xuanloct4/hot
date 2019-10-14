@@ -30,6 +30,7 @@ class UserDevice extends Entity
     public $is_deleted;
     public $created_timestamp;
     public $last_updated_timestamp;
+    public $push_registration_token;
 
     public function __construct()
     {

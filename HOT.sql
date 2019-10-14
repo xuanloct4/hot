@@ -269,6 +269,10 @@ CREATE TABLE IF NOT EXISTS token (
 )
   ENGINE = INNODB;
 
+# user_device
+ALTER TABLE `hot`.`user_device` 
+ADD COLUMN `push_registration_token` MEDIUMTEXT DEFAULT NULL ;
+
 # uri api
 INSERT IGNORE INTO `hot`.`uri` (`representation`,
                                 `content`,
