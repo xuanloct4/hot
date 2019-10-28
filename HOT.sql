@@ -270,7 +270,7 @@ CREATE TABLE IF NOT EXISTS token (
   ENGINE = INNODB;
 
 # user_device
-ALTER TABLE `hot`.`user_device` 
+ALTER TABLE `hot`.`user_device`
 ADD COLUMN `push_registration_token` MEDIUMTEXT DEFAULT NULL ;
 
 # uri api
@@ -338,7 +338,7 @@ INSERT IGNORE INTO `hot`.`uri` (`representation`,
                                 `scopes`,
                                 `type`)
 VALUES ('^((\\/){1,}hot(\\/){1,}public(\\/){1,}api(.php){0,1}(\\/){1,}(board|user|device|server){1}(\\/){1,}profile(\\/)*)',
-        'Src\\Controller\\Profile\\ProfileController',
+        'Src\\Controller\\Detail\\DetailController',
         NULL,
         NULL,
         NULL,

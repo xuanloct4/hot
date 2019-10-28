@@ -12,11 +12,6 @@ use Src\Service\VoIPush\PushNotifications;
 
 class Router
 {
-//    private static $patterns = array(
-//        "^((\/){1,}hot(\/){1,}public(\/){1,}api(.php){0,1}(\/){1,}person(\/)*(\w)*)" => "Src\Controller\PersonController",
-//        // "as"=> class API("^(\/hot\/public\/api(.php){0,1}\/person(\/)*(\w)*)","Src\Controller\PersonController"),
-//    );
-
     // Hold the class instance.
     private static $instance = null;
 
@@ -27,8 +22,6 @@ class Router
         // The expensive process (e.g.,db connection) goes here. = $dbConnection;
     }
 
-    // The object is created from within the class itself
-    // only if the class has no instance.
     public static function getInstance()
     {
         if (self::$instance == null) {
@@ -44,33 +37,35 @@ class Router
         $apis = URIService::getInstance()->findByType(Constants::API);
         foreach ($apis as $api) {
 //            var_dump($api);
-            $matches = array();
-            preg_match("/{$api->representation}/", $uri, $matches);
+            if (StringUtils::compareStringIgnoreCase($api->content, $requestMethod)) {
+                $matches = array();
+                preg_match("/{$api->representation}/", $uri, $matches);
 //             var_dump($matches);
-            if (sizeof($matches) > 0) {
-                $apiScopes = StringUtils::getScopes($api->scopes);
-                $clientScopes = StringUtils::getScopes($scopes);
+                if (sizeof($matches) > 0) {
+                    $apiScopes = StringUtils::getScopes($api->scopes);
+                    $clientScopes = StringUtils::getScopes($scopes);
 
-                foreach ($apiScopes as $apiScope) {
-                    foreach ($clientScopes as $clientScope) {
+                    foreach ($apiScopes as $apiScope) {
+                        foreach ($clientScopes as $clientScope) {
 //                        var_dump($apiScope);
 //                        var_dump($clientScope);
-                        if (StringUtils::compareScope($clientScope, $apiScope) == Comparison::descending || StringUtils::compareScope($clientScope, $apiScope) == Comparison::equal) {
-                            $uriComponents = explode('/', $uri);
-                            array_filter($uriComponents);
-                            $class = $api->content;
-                            $controller = new $class();
-                            // $method = "echoArgOne";
-                            // $controller->$method();
-                            $controller->setURLPattern($api->representation);
-                            $controller->setURIComponents($uriComponents);
-                            $controller->setRequestHeaders($requestHeaders);
-                            $controller->setRequestMethod($requestMethod);
-                            $controller->setRequestParams($requestParams);
-                            $controller->setRequestBody($requestBody);
-                            $controller->setScopes($clientScopes);
-                            $controller->init();
-                            return $controller;
+                            if (StringUtils::compareScope($clientScope, $apiScope) == Comparison::descending || StringUtils::compareScope($clientScope, $apiScope) == Comparison::equal) {
+                                $uriComponents = explode('/', $uri);
+                                array_filter($uriComponents);
+                                $class = $api->physical_address;
+                                $controller = new $class();
+                                // $method = "echoArgOne";
+                                // $controller->$method();
+                                $controller->setURLPattern($api->representation);
+                                $controller->setURIComponents($uriComponents);
+                                $controller->setRequestHeaders($requestHeaders);
+                                $controller->setRequestMethod($requestMethod);
+                                $controller->setRequestParams($requestParams);
+                                $controller->setRequestBody($requestBody);
+                                $controller->setScopes($clientScopes);
+                                $controller->init();
+                                return $controller;
+                            }
                         }
                     }
                 }
