@@ -40,6 +40,7 @@ CREATE TABLE IF NOT EXISTS user_device (
   `authorized_id`          INT UNIQUE NOT NULL,
   `configuration`          LONGTEXT            DEFAULT NULL,
   `scopes`                 LONGTEXT            DEFAULT NULL,
+  `push_registration_token` MEDIUMTEXT DEFAULT NULL,
   `is_deleted`             TINYINT             DEFAULT b'0',
   `is_activated`           TINYINT             DEFAULT b'0',
   `created_timestamp`      TIMESTAMP           DEFAULT CURRENT_TIMESTAMP,
@@ -218,6 +219,17 @@ CREATE TABLE IF NOT EXISTS log (
 )
   ENGINE = INNODB;
 
+# category
+CREATE TABLE IF NOT EXISTS category (
+  id                            INT    NOT NULL AUTO_INCREMENT,
+  `name`                        TEXT            DEFAULT NULL,
+  `description`                 LONGTEXT        DEFAULT NULL,
+  `map`                         LONGTEXT        DEFAULT NULL,
+  `statistics`                  LONGTEXT        DEFAULT NULL,
+  PRIMARY KEY (id)
+)
+  ENGINE = INNODB;
+
 # configuration
 CREATE TABLE IF NOT EXISTS configuration (
   id                       INT          NOT NULL AUTO_INCREMENT,
@@ -228,6 +240,7 @@ CREATE TABLE IF NOT EXISTS configuration (
   `update_order`           VARCHAR(256) NOT NULL,
   `type`                   INT          NOT NULL,
   `scopes`                 VARCHAR(256)          DEFAULT NULL,
+  `category`               VARCHAR(256)          DEFAULT NULL,
   `is_deleted`             TINYINT               DEFAULT b'0',
   `is_activated`           TINYINT               DEFAULT b'0',
   `created_timestamp`      TIMESTAMP             DEFAULT CURRENT_TIMESTAMP,
@@ -268,10 +281,6 @@ CREATE TABLE IF NOT EXISTS token (
   PRIMARY KEY (id)
 )
   ENGINE = INNODB;
-
-# user_device
-ALTER TABLE `hot`.`user_device`
-ADD COLUMN `push_registration_token` MEDIUMTEXT DEFAULT NULL ;
 
 # uri api
 INSERT IGNORE INTO `hot`.`uri` (`representation`,

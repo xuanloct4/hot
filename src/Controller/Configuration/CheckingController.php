@@ -3,8 +3,11 @@
 namespace Src\Controller\Configuration;
 
 
+use Src\Controller\Configuration\Request\ConfigurationRequest;
 use Src\Controller\PreprocessingController;
 use Src\Definition\Configuration;
+use Src\Definition\Constants;
+use Src\Service\Board\BoardConfigurationService;
 
 class CheckingController extends PreprocessingController
 {
@@ -24,7 +27,13 @@ class CheckingController extends PreprocessingController
     }
 
     public function checkingBoardConfiguration() {
+        $configurationRequest = new ConfigurationRequest($this->requestBody);
+        $boardID = $this->requestHeaders[Constants::BoardID];
+        $board = BoardConfigurationService::getInstance()->findFirst($boardID);
+        if($board) {
 
+        }
+        return self::notFoundResponse();
     }
 
     public function checkingUserConfiguration() {

@@ -7,9 +7,9 @@
 
     class BoardConfigurationResponse extends Response
     {
-//        public $server_configuration_id;
-//        public $user_device_id;
-//        public $user_id;
+        public $server_configuration_id;
+        public $user_device_id;
+        public $user_id;
         public $topos;
         public $status;
 //        public $authorized_id;
@@ -24,6 +24,9 @@
 
         public function __construct(BoardConfiguration $boardConfiguration)
         {
+            $this->server_configuration_id = $boardConfiguration->server_configuration_id;
+            $this->user_device_id = $boardConfiguration->user_device_id;
+            $this->user_id = $boardConfiguration->user_id;
             $this->topos = $boardConfiguration->topos;
             $this->status = $boardConfiguration->status;
 //            $this->configuration = $boardConfiguration->configuration;

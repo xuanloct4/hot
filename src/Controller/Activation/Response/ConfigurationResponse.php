@@ -14,6 +14,7 @@ class ConfigurationResponse extends Response
     public $update_order;
     public $type;
     public $scopes;
+    public $category;
     public $is_deleted;
     public $is_activated;
     public $created_timestamp;
@@ -28,6 +29,7 @@ class ConfigurationResponse extends Response
         $this->update_order = $configuration->update_order;
         $this->type = $configuration->type;
         $this->scopes = $configuration->scopes;
+        $this->category = $configuration->category;
         $this->is_deleted = $configuration->is_deleted;
         $this->is_activated = $configuration->is_activated;
         $this->created_timestamp = $configuration->created_timestamp;

@@ -61,6 +61,7 @@ class Interceptor
         // else redirect to api with that path if api scope is (0,0,0,0)
 
         $accessToken = null;
+        $chanelId = -1;
         foreach ($requestHeaders as $name => $value) {
             if (strcmp($name, Constants::ChanelID) == 0) {
                 $chanelId = $value;
@@ -112,13 +113,17 @@ class Interceptor
                                             $this->scopes = $serverConfiguration->scopes;
                                         }
                                         break;
+                                    default:
+                                        echo "Unknown Error";
+                                        break;
                                 }
                             }
                         }
                     }
                 }
             } catch (Exception $e) {
-                echo 'Caught exception: ', $e->getMessage(), "\n";
+//                echo 'Caught exception: ', $e->getMessage(), "\n";
+                echo "Unknown Error";
             }
         }
     }

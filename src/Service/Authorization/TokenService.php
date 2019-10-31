@@ -28,6 +28,7 @@ class TokenService extends DBService
     // CRUD
     public function findFirstByToken($token)
     {
+
         $result = $this->findFirstByAND(array('token' => $token));
         return $result;
     }

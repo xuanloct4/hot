@@ -5,6 +5,8 @@ namespace Src\Service\Authorization;
 use Src\Definition\Configuration;
 use Src\Entity\Authorization\Authorization;
 use Src\Service\DBService;
+use Src\Utils\Encryption\RSA;
+use Src\Utils\StringUtils;
 
 class AuthorizationService extends DBService
 {
@@ -26,8 +28,16 @@ class AuthorizationService extends DBService
     public function findFirstByIDAndCode($uuid, $code, $configuration)
     {
         $realUUID = "$configuration"."_"."$uuid";
-        $result = $this->findFirstByAND(array("uuid" => $realUUID, "authorized_code" => $code));
-        return $result;
+//        $result = $this->findFirstByAND(array("uuid" => $realUUID, "authorized_code" => $code));
+        $list = $this->findByAND(array("uuid" => $realUUID));
+        $decodedAuthorizedCode = RSA::decrypt($code);
+        foreach ($list as $item) {
+            $decodedItemAuthorizedCode = RSA::decrypt($item->authorized_code);
+            if (StringUtils::compareString($decodedAuthorizedCode,$decodedItemAuthorizedCode)) {
+                return $item;
+            }
+        }
+        return null;
     }
 
     public function updateTokens() {

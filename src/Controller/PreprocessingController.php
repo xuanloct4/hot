@@ -8,11 +8,12 @@ use Src\Definition\Configuration;
 class PreprocessingController extends Controller
 {
     protected $configuration;
+    private $configComponentNumber = 1;
 
     public function init()
     {
-        if (sizeof($this->uriComponents) > Configuration::BASE_URL_COMPONENT_NUMBER + 1) {
-            $this->configuration = Configuration::getConfiguration($this->uriComponents[Configuration::BASE_URL_COMPONENT_NUMBER + 1]);
+        if (sizeof($this->uriComponents) > Configuration::BASE_URL_COMPONENT_NUMBER + $this->configComponentNumber) {
+            $this->configuration = Configuration::getConfiguration($this->uriComponents[Configuration::BASE_URL_COMPONENT_NUMBER + $this->configComponentNumber]);
         }
     }
 

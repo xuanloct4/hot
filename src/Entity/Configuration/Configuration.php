@@ -22,6 +22,7 @@ class Configuration extends Entity
     public $update_order;
     public $type;
     public $scopes;
+    public $category;
     public $is_deleted;
     public $is_activated;
     public $created_timestamp;

@@ -13,8 +13,14 @@ use Src\Service\User\UserService;
 
 class HardDeletingConfiguration extends PreprocessingController
 {
+    private $id;
+    private $idComponentNumber = 3;
+
     function processDELETERequest()
     {
+        if (sizeof($this->uriComponents) > Configuration::BASE_URL_COMPONENT_NUMBER + $this->idComponentNumber) {
+            $this->id = Configuration::getConfiguration($this->uriComponents[Configuration::BASE_URL_COMPONENT_NUMBER + $this->idComponentNumber]);
+        }
         switch ($this->configuration) {
             case Configuration::BOARD:
                 return $this->deletingBoardConfiguration();
@@ -30,8 +36,7 @@ class HardDeletingConfiguration extends PreprocessingController
 
     public function deletingBoardConfiguration() {
         try {
-            $request = new DeleteConfigurationRequest($this->requestBody);
-            BoardConfigurationService::getInstance()->delete($request->id);
+            BoardConfigurationService::getInstance()->delete($this->id);
             return $this->jsonEncodedResponse(null);
         } catch (\Exception $e) {
             return self::respondUnprocessableEntity();
@@ -40,8 +45,7 @@ class HardDeletingConfiguration extends PreprocessingController
 
     public function deletingUserConfiguration() {
         try {
-            $request = new DeleteConfigurationRequest($this->requestBody);
-            UserService::getInstance()->delete($request->id);
+            UserService::getInstance()->delete($this->id);
             return $this->jsonEncodedResponse(null);
         } catch (\Exception $e) {
             return self::respondUnprocessableEntity();
@@ -50,8 +54,7 @@ class HardDeletingConfiguration extends PreprocessingController
 
     public function deletingUserDeviceConfiguration() {
         try {
-            $request = new DeleteConfigurationRequest($this->requestBody);
-            UserDeviceService::getInstance()->delete($request->id);
+            UserDeviceService::getInstance()->delete($this->id);
             return $this->jsonEncodedResponse(null);
         } catch (\Exception $e) {
             return self::respondUnprocessableEntity();
@@ -60,8 +63,7 @@ class HardDeletingConfiguration extends PreprocessingController
 
     public function deletingServerConfiguration() {
         try {
-            $request = new DeleteConfigurationRequest($this->requestBody);
-            ServerConfigurationService::getInstance()->delete($request->id);
+            ServerConfigurationService::getInstance()->delete($this->id);
             return $this->jsonEncodedResponse(null);
         } catch (\Exception $e) {
             return self::respondUnprocessableEntity();

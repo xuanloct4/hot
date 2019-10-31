@@ -96,7 +96,7 @@ class Router
 //        var_dump(RSA::encrypt("abcdef"));
 //        RSA::generateRSAKeyPair();
 
-//        var_dump(RSA::encrypt("my secret message"));
+//        var_dump(RSA::encrypt("def"));
 //        var_dump(RSA::decrypt("cHA0uS/yMNJRsPIt9/eX1Z44zJGDIbdXUJKKLf9DjntuWyAo/AXvqCMwGA3meFAsAWU+VJ3Dqito
 //dyNU6j6aOuQaBxpaCgYdPBlSr0YDHsG50KsheazD9Gn9LEvLJizjrgIyefvqP1BAQFrq5vdQ6puw
 //UPFk9eOLqZAtTU49qKoHSJrJ9Pgm992aQHJJA63RASQUXE+G+O27pk2eUkZGkshtrizc9cQwzFH2
