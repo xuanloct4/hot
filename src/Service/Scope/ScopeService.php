@@ -3,10 +3,11 @@
 namespace Src\Service\Scope;
 
 use Src\Entity\Scope\Scope;
+use Src\Service\DBService;
 use Src\System\Configuration;
 
 
-class ScopeService
+class ScopeService extends DBService
 {
     // Hold the class instance.
     private static $instance = null;

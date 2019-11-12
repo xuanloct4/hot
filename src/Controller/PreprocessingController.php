@@ -7,8 +7,9 @@ use Src\Definition\Configuration;
 
 class PreprocessingController extends Controller
 {
+    protected $interceptData;
     protected $configuration;
-    private $configComponentNumber = 1;
+    protected $configComponentNumber = 1;
 
     public function init()
     {

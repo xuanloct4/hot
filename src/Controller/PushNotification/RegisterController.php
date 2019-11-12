@@ -17,6 +17,6 @@ class RegisterController extends PreprocessingController
     }
 
    private function registerUserDevice() {
-
+        //TODO
    }
 }

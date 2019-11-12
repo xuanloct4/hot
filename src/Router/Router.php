@@ -32,7 +32,7 @@ class Router
     }
 
 
-    public function getControllerForRequest($uri, $requestHeaders, $requestMethod, $requestParams, $requestBody, $scopes)
+    public function getControllerForRequest($uri, $requestHeaders, $requestMethod, $requestParams, $requestBody, $scopes, $interceptData)
     {
         $apis = URIService::getInstance()->findByType(Constants::API);
         foreach ($apis as $api) {
@@ -63,6 +63,7 @@ class Router
                                 $controller->setRequestParams($requestParams);
                                 $controller->setRequestBody($requestBody);
                                 $controller->setScopes($clientScopes);
+                                $controller->setInterceptData($interceptData);
                                 $controller->init();
                                 return $controller;
                             }
@@ -107,10 +108,19 @@ class Router
 //K1lw3GtxhtfQQSxw73TucuXaUkUO0nTYb4mMLkv/GK32zlacAMhNJedSSMbA02Q0KgeyTLcsLouB
 //vibzqlZZaKzmocZqtG2JJrtNBgScGgGW75ZKuFNTS3jJvyiX7kjXB4TctkWc4fFPmurPMKh7JDk="));
 
+        foreach ($requestHeaders as $name => $value) {
+            if (strcmp($name, Constants::AccessType) == 0 &&
+                (strcmp($value, AccessType::NOT_AUTHORIZED) == 0 ||
+                    strcmp($value, AccessType::TRUSTED_AUTHORIZE) == 0)) {
+                $interceptor = new InstantRouter();
+                $interceptor->handleRequest($uri, $requestHeaders, $requestMethod, $requestParams, $requestBody, $value);
+                return;
+            }
+        }
 
         $interceptor = new Interceptor();
         $interceptor->authorize($uri, $requestHeaders, $requestMethod, $requestParams, $requestBody);
-        $controller = $this->getControllerForRequest($interceptor->uriComponents, $interceptor->requestHeaders, $interceptor->requestMethod, $interceptor->requestParams, $interceptor->requestBody, $interceptor->scopes);
+        $controller = $this->getControllerForRequest($interceptor->uriComponents, $interceptor->requestHeaders, $interceptor->requestMethod, $interceptor->requestParams, $interceptor->requestBody, $interceptor->scopes, $interceptor->interceptData);
         if ($controller != null && method_exists($controller, "processRequest")) {
             $controller->processRequest();
         } else {

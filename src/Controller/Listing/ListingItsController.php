@@ -3,7 +3,7 @@
 namespace Src\Controller\Listing;
 
 
-use Src\Controller\Activation\Response\ConfigurationResponse;
+use Src\Controller\Configuration\Response\ConfigurationResponse;
 use Src\Controller\Configuration\Response\BoardConfigurationResponse;
 use Src\Controller\Controller;
 use Src\Controller\PreprocessingController;

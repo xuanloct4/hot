@@ -26,6 +26,7 @@ abstract class Controller implements iController
     protected $requestParams;
     protected $requestBody;
 
+    protected $interceptData;
     protected $scopes;
     public function __construct()
     {
@@ -88,8 +89,22 @@ abstract class Controller implements iController
         $this->scopes = $scopes;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getInterceptData()
+    {
+        return $this->interceptData;
+    }
 
-    
+    /**
+     * @param mixed $interceptData
+     */
+    public function setInterceptData($interceptData)
+    {
+        $this->interceptData = $interceptData;
+    }
+
     public function isMatchURLPattern()
     {
         // return true;

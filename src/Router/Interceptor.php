@@ -2,6 +2,7 @@
 
 namespace Src\Router;
 
+use Src\Definition\AccessType;
 use Src\Definition\Comparison;
 use Src\Definition\Configuration;
 use Src\Definition\Constants;
@@ -37,14 +38,15 @@ class Interceptor
     public $requestParams;
     public $requestBody;
     public $scopes;
+    public $interceptData;
 
     public function authorize($uriComponents, $requestHeaders, $requestMethod, $requestParams, $requestBody)
     {
-        $arr = array(new QEEE(3,"price","a"),
-            new QEEE(3,"quality","a"),
-            new QEEE(2,"milk","b"),
-            new QEEE(2,"milk","c"),
-            new QEEE(5,"pork","c"));
+//        $arr = array(new QEEE(3,"price","a"),
+//            new QEEE(3,"quality","a"),
+//            new QEEE(2,"milk","b"),
+//            new QEEE(2,"milk","c"),
+//            new QEEE(5,"pork","c"));
 //        var_dump(ArrayUtils::sort($arr, array(new OrderColumn("num", Comparison::descending))));
 //        var_dump($arr);
 
@@ -60,6 +62,7 @@ class Interceptor
         // find user id with that code (check if the code is in expired_time) and check scope
         // else redirect to api with that path if api scope is (0,0,0,0)
 
+        $this->scopes = "0,0,0,0";
         $accessToken = null;
         $chanelId = -1;
         foreach ($requestHeaders as $name => $value) {
@@ -70,7 +73,6 @@ class Interceptor
             }
         }
 
-        $this->scopes = "0,0,0,0";
         if ($accessToken != null) {
             try {
                 $token = TokenService::getInstance()->findFirstByToken($accessToken);
@@ -90,6 +92,7 @@ class Interceptor
                                         if ($boardConfiguration != null) {
                                             $this->requestHeaders[Constants::BoardID] = $boardConfiguration->id;
                                             $this->scopes = $boardConfiguration->scopes;
+                                            $this->interceptData = $boardConfiguration;
                                         }
                                         break;
                                     case Configuration::USER:
@@ -97,6 +100,7 @@ class Interceptor
                                         if ($userConfiguration != null) {
                                             $this->requestHeaders[Constants::UserID] = $userConfiguration->id;
                                             $this->scopes = $userConfiguration->scopes;
+                                            $this->interceptData = $userConfiguration;
                                         }
                                         break;
                                     case Configuration::USER_DEVICE:
@@ -104,6 +108,7 @@ class Interceptor
                                         if ($userDeviceConfiguration != null) {
                                             $this->requestHeaders[Constants::UserDeviceID] = $userDeviceConfiguration->id;
                                             $this->scopes = $userDeviceConfiguration->scopes;
+                                            $this->interceptData = $userDeviceConfiguration;
                                         }
                                         break;
                                     case Configuration::SERVER:
@@ -111,6 +116,7 @@ class Interceptor
                                         if ($serverConfiguration != null) {
                                             $this->requestHeaders[Constants::ServerID] = $serverConfiguration->id;
                                             $this->scopes = $serverConfiguration->scopes;
+                                            $this->interceptData = $serverConfiguration;
                                         }
                                         break;
                                     default:

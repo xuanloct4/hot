@@ -3,8 +3,8 @@
 namespace Src\Controller\Detail;
 
 
-use Src\Controller\Activation\Response\ConfigurationResponse;
 use Src\Controller\Configuration\Response\BoardConfigurationResponse;
+use Src\Controller\Configuration\Response\ConfigurationResponse;
 use Src\Controller\Configuration\Response\ServerConfigurationResponse;
 use Src\Controller\Configuration\Response\UserConfigurationResponse;
 use Src\Controller\Configuration\Response\UserDeviceConfigurationResponse;

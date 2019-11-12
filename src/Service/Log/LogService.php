@@ -3,9 +3,10 @@
 namespace Src\Service\Log;
 
 use Src\Entity\Log\Log;
+use Src\Service\DBService;
 use Src\System\Configuration;
 
-class LogService
+class LogService extends DBService
 {
     // Hold the class instance.
     private static $instance = null;

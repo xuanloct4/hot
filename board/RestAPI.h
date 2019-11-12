@@ -18,20 +18,24 @@
 class RestAPI {
     
 public:
-    String authorization_code;
-    int chanelID;
     StringUtil *stringUtil;
-    WiFiClientSecure *httpsClient;
+    WiFiClientSecure httpsClient;
     RestAPI();
     RestAPI(String authorization, int _chanelID);
     HTTPMethod httpMethodFromString(String text);
     String labelHTTPMethod(HTTPMethod httpMethod);
-    void makeHTTPRequest(HTTPMethod httpMethod, String URL, String paramsJsonText, String bodyJsonText, String additonalHeaderJsonText);
-    void makeHTTPSRequest(HTTPMethod httpMethod, char *host, int httpsPort, String URL, String paramsJsonText, String bodyJsonText, String additonalHeaderJsonText);
+    String makeHTTPRequest(HTTPMethod httpMethod, String host, String URL, String paramsJsonText, String bodyJsonText, String additonalHeaderJsonText, int httpPort = 80);
+    String makeHTTPSRequest(HTTPMethod httpMethod, String host, String URL, String paramsJsonText, String bodyJsonText, String additonalHeaderJsonText, int httpsPort = 443);
     void setDefaultHeaders(HTTPClient& http);
     void setAdditionalHeaders(HTTPClient& http, String additonalHeaderJsonText, boolean isLast);
+    String defaultHTTPSHeaders();
+    String additionalHTTPSHeaders(String additonalHeaderJsonText);
+    void setAuthorization(String code);
+    void setChanelID(int id);
     ~RestAPI();
     
 private:
-    
+    String authorization_code;
+    int chanelID;
+    String defaultHeadersJSON();
 };

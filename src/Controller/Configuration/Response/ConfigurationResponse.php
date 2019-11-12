@@ -1,6 +1,6 @@
 <?php
 
-namespace Src\Controller\Activation\Response;
+namespace Src\Controller\Configuration\Response;
 
 use Src\Controller\Response;
 use Src\Entity\Configuration\Configuration;

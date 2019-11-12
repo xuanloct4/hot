@@ -23,19 +23,19 @@ class LogoutController extends PreprocessingController
         return self::notFoundResponse();
     }
 
-    public function logoutBoard() {
+    private function logoutBoard() {
 
     }
 
-    public function logoutUser() {
+    private function logoutUser() {
 
     }
 
-    public function logoutUserDevice() {
+    private function logoutUserDevice() {
 
     }
 
-    public function logoutServer() {
+    private function logoutServer() {
 
     }
 }

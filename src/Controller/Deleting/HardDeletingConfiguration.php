@@ -2,8 +2,6 @@
 
 namespace Src\Controller\Deleting;
 
-
-use Src\Controller\Deleting\Request\DeleteConfigurationRequest;
 use Src\Controller\PreprocessingController;
 use Src\Definition\Configuration;
 use Src\Service\Board\BoardConfigurationService;

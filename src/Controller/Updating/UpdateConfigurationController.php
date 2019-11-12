@@ -14,7 +14,7 @@ use Src\Service\Server\ServerConfigurationService;
 use Src\Service\User\UserDeviceService;
 use Src\Service\User\UserService;
 
-class UpdateConfiguration extends PreprocessingController
+class UpdateConfigurationController extends PreprocessingController
 {
     function processPUTRequest()
     {

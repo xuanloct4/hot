@@ -3,7 +3,7 @@
 
 RestAPI::RestAPI() {
    stringUtil = new StringUtil();
-   httpsClient = new WiFiClientSecure();  
+//   httpsClient = new WiFiClientSecure();  
 }
 
 RestAPI::RestAPI(String authorization, int _chanelID) {
@@ -12,11 +12,18 @@ RestAPI::RestAPI(String authorization, int _chanelID) {
     chanelID = _chanelID;
 }
 
+void RestAPI::setAuthorization(String code) {
+  authorization_code = code;
+}
+
+void RestAPI::setChanelID(int id) {
+  chanelID = id;
+}
+
 RestAPI::~RestAPI() {
   delete(stringUtil);
-  delete(httpsClient);
+//  delete(httpsClient);
 }
-  
 
 HTTPMethod RestAPI::httpMethodFromString(String text) {
     if (text.equalsIgnoreCase("GET")) {
@@ -67,7 +74,7 @@ String RestAPI::labelHTTPMethod(HTTPMethod httpMethod) {
     return methodLabel;
 }
 
-void RestAPI::makeHTTPRequest(HTTPMethod httpMethod, String URL, String paramsJsonText, String bodyJsonText, String additonalHeaderJsonText) {
+String RestAPI::makeHTTPRequest(HTTPMethod httpMethod, String host, String URL, String paramsJsonText, String bodyJsonText, String additonalHeaderJsonText, int httpPort) {
     Serial.println("Checking Wifi status");
     if (WiFi.status() == WL_CONNECTED) { //Check WiFi connection status
         Serial.println("---------------------------------------------------------------------------------");
@@ -113,48 +120,35 @@ void RestAPI::makeHTTPRequest(HTTPMethod httpMethod, String URL, String paramsJs
                 break;
             default:
                 Serial.println("The request method is not supported");
-                return;
+                return "";
         }
-        
-        Serial.print("httpCode: ");
-        Serial.println(httpCode);
+
+        Serial.print("httpCode: ");Serial.println(httpCode);
+        String response = http.getString();   //Get the request response payload
         if (httpCode > 0) { //Check the returning code
-            String payload = http.getString();   //Get the request response payload
-            Serial.print("Response: ");Serial.println(payload);                     //Print the response payload
+            Serial.print("Response: ");Serial.println(response);                     //Print the response payload
         } else {
             Serial.printf("[HTTP] [%s]... failed, error: %s\n", methodLabel.c_str(), http.errorToString(httpCode).c_str());
         }
-        
         http.end();   //Close connection
         Serial.println("End making HTTP request");
         Serial.println("---------------------------------------------------------------------------------");
+        return response;
     } else {
         Serial.println("Problem when connecting to the Wifi");
+        return "";
     }
 }
 
-void RestAPI::makeHTTPSRequest(HTTPMethod httpMethod, char *host, int httpsPort, String URL, String paramsJsonText, String bodyJsonText, String additonalHeaderJsonText) {
-
+String RestAPI::makeHTTPSRequest(HTTPMethod httpMethod, String host, String URL, String paramsJsonText, String bodyJsonText, String additonalHeaderJsonText, int httpsPort) {
 ////Link to read data from https://jsonplaceholder.typicode.com/comments?postId=7
 ////Web/Server address to read/write from 
 //  const char *host = "postman-echo.com";
 //  const int httpsPort = 443;  //HTTPS= 443 and HTTP = 80
 //SHA1 finger print of certificate use web browser to view and copy
   const char *fingerprint = "A6 5A 41 2C 0E DC FF C3 16 E8 57 E9 F2 C3 11 D2 71 58 DF D9";
-  String authorization_code = "we";
-  String msg = "say=Hi&to=Mom";
-//  String URL;
-//  //POST Data
-//  URL = "/post";
 
-//  const char* host = "api.dgs.com";
-//  const int httpsPort = 443;
-//  String URL = "/ccs-int/v1/applicationdatalogging/1.0";
-//  String msg = "";
-
-  Serial.print("connecting to : '");
-  Serial.print(host);
-  Serial.println("'");
+  Serial.print("Connecting to : '"); Serial.print(host); Serial.println("'");
 
 //// Verify Fingerprint
 //  Serial.printf("Using fingerprint '%s'\n", fingerprint);
@@ -186,51 +180,70 @@ void RestAPI::makeHTTPSRequest(HTTPMethod httpMethod, char *host, int httpsPort,
 //}
 //crtFile.close();
 
-  httpsClient->setTimeout(15000); // 15 Seconds
-  
-//  Serial.print("HTTPS Connecting");
+  httpsClient.setTimeout(15000); // 15 Seconds
   int r=0; //retry counter
-  while((!httpsClient->connect(host, httpsPort)) && (r < 30)){
+  while((!httpsClient.connect(host, httpsPort)) && (r < 30)){
       delay(100);
       Serial.print(".");
       r++;
   }
   
+  Serial.println("");
   if(r==30) {
     Serial.println("Connection failed");
   }
   else {
-    Serial.println("Connected to web");
+    Serial.println("Connected!");
   }
-  
-  Serial.print("requesting URL: '");
-  Serial.print(URL);
   
   /*
    POST /post HTTP/1.1
    Host: postman-echo.com
-   Content-Type: application/json
+   Authorization: authorization_code
+   Chanel-ID: chanelID
+   Content-Type: application/json;charset=utf-8
+   User-Agent: ESP8266
+   Connection: close
    Content-Length: 13
-  
+   
    say=Hi&to=Mom
     
    */
+
+    String request = "";
+    request += labelHTTPMethod(httpMethod);
+    request += " ";
+    request += URL;
+    request += " HTTP/1.1\r\n";
+    
+    request += "Host: ";
+    request += host;
+    request += "\r\n";
+
+    request += defaultHTTPSHeaders();
+    request += additionalHTTPSHeaders(additonalHeaderJsonText);
+
+    request += "Content-Length: ";
+    request += bodyJsonText.length();
+    request += "\r\n\r\n";
+    request += bodyJsonText;
+    request += "\r\n";
+
+    Serial.println("Request: ");Serial.println(request);
+    httpsClient.print(request);
+         
+//  httpsClient.print(String("GET ") + URL + " HTTP/1.1\r\n" +
+//               "Host: " + host + "\r\n" +
+//               "User-Agent: BuildFailureDetectorESP8266\r\n" +
+//               "Authorization: " + authorization_code + "\r\n" +
+//               "Chanel-ID: " + chanelID + "\r\n" +
+//               "Connection: close\r\n" +
+//               "\r\n");
  
-  httpsClient->print(labelHTTPMethod(httpMethod) + URL + " HTTP/1.1\r\n" +
-               "Host: " + host + "\r\n" +
-               "Authorization: " + authorization_code + "\r\n" +
-               "Chanel-ID: " + chanelID + "\r\n" +
-               "Content-Type: application/json;charset=utf-8" + "\r\n" +
-               "User-Agent: ESP8266\r\n" +
-               "Connection: close\r\n"
-               "Content-Length: "+  msg.length() + "\r\n" +
-               "\r\n" +
-                msg + "\r\n");
- 
-  Serial.println("request sent");
-                  
-  while (httpsClient->connected()) {
-    String line = httpsClient->readStringUntil('\n');
+  Serial.println("Request sent!");
+  
+  while (httpsClient.connected()) {
+    String line = httpsClient.readStringUntil('\n');
     if (line == "\r") {
       Serial.println("headers received");
       break;
@@ -238,27 +251,62 @@ void RestAPI::makeHTTPSRequest(HTTPMethod httpMethod, char *host, int httpsPort,
   }
 
   unsigned long timeout = millis();
-  while (httpsClient->available() == 0) {
+  while (httpsClient.available() == 0) {
     if (millis() - timeout > 5000) {
         Serial.println(">>> Client Timeout !");
-        httpsClient->stop();
-        return;
+        httpsClient.stop();
+        return "";
     }
   }
  
   Serial.println("reply was:");
   Serial.println("==========");
-  String line;
-  while(httpsClient->available()){        
-    line = httpsClient->readStringUntil('\n');  //Read Line by Line
-    Serial.println(line); //Print response
+  String response = "";
+  while(httpsClient.available()){        
+    response += httpsClient.readStringUntil('\n');  //Read Line by Line
   }
+  Serial.println("Response: ");Serial.println(response); //Print response
   Serial.println("==========");
-  Serial.println("closing connection");
+  Serial.println("Closing connection!");
+  return response;
 }
 
 void RestAPI::setDefaultHeaders(HTTPClient& http) {
     Serial.println("Headers: [");
+    String headerJsonString = defaultHeadersJSON();
+    setAdditionalHeaders(http, headerJsonString, false);
+}
+
+void RestAPI::setAdditionalHeaders(HTTPClient& http, String additonalHeaderJsonText, boolean isLast) {
+    JsonObject& additonalHeaderJsonObject = stringUtil->jsonFromString(additonalHeaderJsonText);
+    for (auto kv : additonalHeaderJsonObject) {
+        Serial.print(kv.key);Serial.print(", ");Serial.println(kv.value.as<char*>());
+        http.addHeader(kv.key, kv.value.as<char*>());
+    }
+    if (isLast) {
+        Serial.println("]");
+    }
+}
+
+String RestAPI::defaultHTTPSHeaders() {
+   String headerJsonString = defaultHeadersJSON();
+   return additionalHTTPSHeaders(headerJsonString); 
+}
+      
+String RestAPI::additionalHTTPSHeaders(String additonalHeaderJsonText) {
+    String additionalJsonString = "";
+    JsonObject& additonalHeaderJsonObject = stringUtil->jsonFromString(additonalHeaderJsonText);
+    for (auto kv : additonalHeaderJsonObject) {
+        additionalJsonString += kv.key;
+        additionalJsonString += ": ";
+        additionalJsonString += kv.value.as<String>();
+        additionalJsonString += "\r\n";
+    }
+
+   return additionalJsonString;
+}
+
+String RestAPI::defaultHeadersJSON() {
     String headerJsonString = "{";
     if (!stringUtil->isNullOrEmpty(authorization_code)) {
     headerJsonString += "\"Authorization\": ";
@@ -282,17 +330,8 @@ void RestAPI::setDefaultHeaders(HTTPClient& http) {
 
     headerJsonString += "\"Connection\": ";
     headerJsonString += "\"close\"";
-    
-    setAdditionalHeaders(http, headerJsonString, false);
-}
 
-void RestAPI::setAdditionalHeaders(HTTPClient& http, String additonalHeaderJsonText, boolean isLast) {
-    JsonObject& additonalHeaderJsonObject = stringUtil->jsonFromString(additonalHeaderJsonText);
-    for (auto kv : additonalHeaderJsonObject) {
-        Serial.print(kv.key);Serial.print(", ");Serial.println(kv.value.as<char*>());
-        http.addHeader(kv.key, kv.value.as<char*>());
-    }
-    if (isLast) {
-        Serial.println("]");
-    }
+    
+    headerJsonString += "}";
+    return headerJsonString;
 }

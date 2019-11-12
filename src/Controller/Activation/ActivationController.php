@@ -6,7 +6,7 @@ namespace Src\Controller\Activation;
 use Src\Controller\Activation\Request\ActivateBoardConfigurationRequest;
 use Src\Controller\Activation\Request\ActivateDeviceConfigurationRequest;
 use Src\Controller\Activation\Response\BoardConfigurationResponse;
-use Src\Controller\Activation\Response\ConfigurationResponse;
+use Src\Controller\Configuration\Response\ConfigurationResponse;
 use Src\Controller\Activation\Response\DeviceConfigurationResponse;
 use Src\Controller\Controller;
 use Src\Controller\PreprocessingController;

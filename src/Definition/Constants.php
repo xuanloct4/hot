@@ -15,4 +15,5 @@ class Constants extends Enum
     const UserID = "User-ID";
     const UserDeviceID = "Device-ID";
     const ServerID = "Server-ID";
+    const AccessType = "Access-Type";
 }
