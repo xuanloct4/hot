@@ -40,4 +40,18 @@ class ArrayUtils
         return $sortedArray;
     }
 
+    public static function arrayByRemovingEmptyElement(Array $arr)
+    {
+        $nonEmptyArray = array();
+
+        for ($i = 0; $i < sizeof($arr); $i++) {
+            $element = $arr[$i];
+           if (!StringUtils::isNullOrEmpty($element)) {
+               array_push($nonEmptyArray, $element);
+           }
+        }
+
+        return $nonEmptyArray;
+    }
+
 }

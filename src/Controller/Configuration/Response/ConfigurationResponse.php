@@ -36,7 +36,6 @@ class ConfigurationResponse extends Response
         $this->last_updated_timestamp = $configuration->last_updated_timestamp;
     }
 
-
     public static function toConfigurationResponses(array $configurations)
     {
         $configurationResponses = array();
@@ -44,8 +43,7 @@ class ConfigurationResponse extends Response
             $configuration = new ConfigurationResponse($configurations[$i]);
             array_push($configurationResponses, $configuration);
         }
-        // TODO
-        // Sorting by update_order and updated timestamp
+
         return $configurationResponses;
     }
 }

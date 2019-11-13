@@ -65,7 +65,7 @@ class AuthorizationController extends PreprocessingController
     {
         $a = AuthorizationService::getInstance()->findFirstByIDAndCode($uuid, $code, $this->configuration);
         if ($a != null) {
-            $tokens = StringUtils::trimStringToArrayWithNonEmptyElement(",", $a->tokens);
+            $tokens = StringUtils::trimStringToArrayWithNonEmptyElement("|", $a->tokens);
             // TODO
             // Log
 

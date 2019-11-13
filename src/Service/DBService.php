@@ -4,23 +4,28 @@ namespace Src\Service;
 
 use Src\System\Configuration;
 
-interface iDBService {
+interface iDBService
+{
     public function sampleEntity();
-    public  static function getInstance();
+
+    public static function getInstance();
 }
 
 abstract class DBService implements iDBService
 {
 
-    public function fetchClass(){
+    public function fetchClass()
+    {
         return get_class($this->sampleEntity());
     }
 
-    protected function dbConnection() {
+    protected function dbConnection()
+    {
         return Configuration::getInstance()->getConnection();
     }
 
-    public function table() {
+    public function table()
+    {
         $class = $this->fetchClass();
         return (new $class())::table();
     }
@@ -32,18 +37,18 @@ abstract class DBService implements iDBService
     }
 
     // CRUD
-	public function executeDB($statement, $input)
-	{
+    public function executeDB($statement, $input)
+    {
         try {
             $statement = $this->dbConnection()->prepare($statement);
             $statement->execute($input);
         } catch (\PDOException $e) {
             exit($e->getMessage());
-        }	
-	}
-	
-	public function executeAndFetchDB($statement, $input)
-	{
+        }
+    }
+
+    public function executeAndFetchDB($statement, $input)
+    {
         try {
             $statement = $this->dbConnection()->prepare($statement);
             $statement->execute($input);
@@ -52,21 +57,21 @@ abstract class DBService implements iDBService
             return $result;
         } catch (\PDOException $e) {
             exit($e->getMessage());
-        }	
-	}
-	
-	public function queryDB($statement)
-	{
+        }
+    }
+
+    public function queryDB($statement)
+    {
         try {
-            $statement = $this->db->query($statement);
+            $statement = $this->dbConnection()->query($statement);
             //            $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
             $result = $statement->fetchAll(\PDO::FETCH_CLASS, $this->fetchClass());
             return $result;
         } catch (\PDOException $e) {
             exit($e->getMessage());
         }
-	}
-	
+    }
+
     public function findAll()
     {
         $table = $this->table();
@@ -76,13 +81,13 @@ abstract class DBService implements iDBService
             FROM
             $table;
             ";
-			
-		return $this->queryDB($statement);
+
+        return $this->queryDB($statement);
     }
 
     public function find($id)
     {
-        return $this->findBy(array("id" => (int)$id),true);
+        return $this->findBy(array("id" => (int)$id), true);
     }
 
     public function findOne($id)
@@ -175,17 +180,17 @@ abstract class DBService implements iDBService
 //        var_dump($input);
         $table = $this->table();
 
-        $where= "";
+        $where = "";
         $keys = array_keys($input);
         for ($i = 0; $i < sizeof($keys); $i++) {
             if ($i > 0) {
-                if($isAnd == true) {
+                if ($isAnd == true) {
                     $where = $where . "\n" . "AND" . " ";
                 } else {
                     $where = $where . "\n" . "OR" . " ";
                 }
             }
-            $where = $where.$keys[$i]." = :".$keys[$i];
+            $where = $where . $keys[$i] . " = :" . $keys[$i];
 
         }
 
@@ -204,20 +209,20 @@ abstract class DBService implements iDBService
     {
         $table = $this->table();
 
-        $fields= "(";
-        $values= "(";
+        $fields = "(";
+        $values = "(";
         $keys = array_keys($input);
         for ($i = 0; $i < sizeof($keys); $i++) {
             if ($i > 0) {
-                $fields = $fields.", ";
-                $values = $values.", ";
+                $fields = $fields . ", ";
+                $values = $values . ", ";
             }
-            $fields = $fields.$keys[$i];
-            $values = $values.":".$keys[$i];
+            $fields = $fields . $keys[$i];
+            $values = $values . ":" . $keys[$i];
         }
 
-        $fields = $fields.")";
-        $values = $values.")";
+        $fields = $fields . ")";
+        $values = $values . ")";
 
         $statement = "
             INSERT INTO $table
@@ -226,9 +231,9 @@ abstract class DBService implements iDBService
             $values;
             ";
 
-	 	$this->executeDB($statement, $input);
+        $this->executeDB($statement, $input);
 //	 	var_dump($this->dbConnection()->lastInsertId());
-		return $this->dbConnection()->lastInsertId();
+        return $this->dbConnection()->lastInsertId();
     }
 
     public function update(Array $input)
@@ -242,12 +247,12 @@ abstract class DBService implements iDBService
         }
 
         $table = $this->table();
-        $keyValues= "";
+        $keyValues = "";
         $keys = array_keys($inputId);
         for ($i = 0; $i < sizeof($keys); $i++) {
-            $keyValues= $keyValues.$keys[$i]." = :".$keys[$i];
-            if ($i < sizeof($keys)-1) {
-                $keyValues= $keyValues.",\n";
+            $keyValues = $keyValues . $keys[$i] . " = :" . $keys[$i];
+            if ($i < sizeof($keys) - 1) {
+                $keyValues = $keyValues . ",\n";
             }
         }
 
@@ -258,7 +263,7 @@ abstract class DBService implements iDBService
             WHERE id = :id;
             ";
 //        var_dump($statement);
-       return $this->executeAndFetchDB($statement, $input);
+        return $this->executeAndFetchDB($statement, $input);
     }
 
     public function delete($id)
@@ -268,7 +273,7 @@ abstract class DBService implements iDBService
             DELETE FROM $table
             WHERE id = :id;
             ";
-		
-		return $this->executeDB($statement, array('id' => $id));
+
+        return $this->executeDB($statement, array('id' => $id));
     }
 }

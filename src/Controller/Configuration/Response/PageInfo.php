@@ -4,8 +4,8 @@ namespace Src\Controller\Configuration\Response;
 
 
 class PageInfo {
-    public $currentPage;
-    public $totalPages;
-    public $pageSize;
-    public $totalItems;
+    public $current_page;
+    public $total_pages;
+    public $page_size;
+    public $total_items;
 }

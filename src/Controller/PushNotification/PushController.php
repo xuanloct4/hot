@@ -39,7 +39,7 @@ class PushController extends PreprocessingController
 
     private function tickleUserDevice()
     {
-        $userDevicesID = StringUtils::trimStringToArray(",", $this->interceptData->user_device_id);
+        $userDevicesID = StringUtils::trimStringToArray("|", $this->interceptData->user_device_id);
 
 
 
