@@ -14,7 +14,7 @@
         public $status;
 //        public $authorized_id;
         public $configuration;
-//        public $scopes;
+        public $scopes;
         public $is_activated;
         public $is_deleted;
         public $created_timestamp;
@@ -30,6 +30,7 @@
             $this->topos = $boardConfiguration->topos;
             $this->status = $boardConfiguration->status;
 //            $this->configuration = $boardConfiguration->configuration;
+            $this->scopes = $boardConfiguration->scopes;
             $this->is_activated = $boardConfiguration->is_activated;
             $this->is_deleted = $boardConfiguration->is_deleted;
             $this->created_timestamp = $boardConfiguration->created_timestamp;

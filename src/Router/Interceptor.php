@@ -15,6 +15,7 @@ use Src\Service\User\UserDeviceService;
 use Src\Service\User\UserService;
 use Src\Utils\ArrayUtils;
 use Src\Utils\DateTimeUtils;
+use Src\Utils\StringUtils;
 
 class QEEE
 {
@@ -38,6 +39,7 @@ class Interceptor
     public $requestParams;
     public $requestBody;
     public $scopes;
+    public $chanelId;
     public $interceptData;
 
     public function authorize($uriComponents, $requestHeaders, $requestMethod, $requestParams, $requestBody)
@@ -64,11 +66,11 @@ class Interceptor
 
         $this->scopes = "0,0,0,0";
         $accessToken = null;
-        $chanelId = -1;
+        $this->chanelId = -1;
         foreach ($requestHeaders as $name => $value) {
-            if (strcmp($name, Constants::ChanelID) == 0) {
-                $chanelId = $value;
-            } else if (strcmp($name, Constants::Authorization) == 0) {
+            if (StringUtils::compareStringIgnoreCase(strtolower($name), strtolower(Constants::ChanelID))) {
+                $this->chanelId = $value;
+            } else if (StringUtils::compareStringIgnoreCase(strtolower($name), strtolower(Constants::Authorization))) {
                 $accessToken = $value;
             }
         }
@@ -84,9 +86,10 @@ class Interceptor
                         $expire = $token->expired_interval;
                         if ($expire == null || $expire < 0 || $interval < $expire) {
                             $authorization = AuthorizationService::getInstance()->find($token->authorized_id);
+//                            var_dump($authorization);
                             foreach ($authorization as $item) {
                                 $auth_id = $item->id;
-                                switch ($chanelId) {
+                                switch ($this->chanelId) {
                                     case Configuration::BOARD:
                                         $boardConfiguration = BoardConfigurationService::getInstance()->findByAuthID($auth_id);
                                         if ($boardConfiguration != null) {

@@ -23,6 +23,8 @@ class User extends Entity
     public $authorized_id;
     public $preferences;
     public $scopes;
+    public $user_device_id;
+    public $board_id;
     public $is_activated;
     public $is_deleted;
     public $created_timestamp;

@@ -15,33 +15,22 @@ class PushController extends PreprocessingController
     public function processPOSTRequest() {
         switch ($this->configuration) {
             case Configuration::BOARD:
-                return $this->tickleBoard();
+                return $this->boardTickle();
             case Configuration::USER:
-                return $this->tickleUser();
+                return $this->userTickle();
             case Configuration::USER_DEVICE:
-                return $this->tickleUserDevice();
+                return $this->userDeviceTickle();
             case Configuration::SERVER:
-                return $this->tickleServer();
+                return $this->serverTickle();
         }
         return self::notFoundResponse();
     }
 
-    private function tickleBoard()
-    {
-        return self::notFoundResponse();
-    }
-
-
-    private function tickleUser()
-    {
-        return self::notFoundResponse();
-    }
-
-    private function tickleUserDevice()
+    private function boardTickle()
     {
         $userDevicesID = StringUtils::trimStringToArray("|", $this->interceptData->user_device_id);
 
-
+        var_dump($userDevicesID);
 
         $content = json_encode($this->requestBody);
         $configuration = $this->configuration;
@@ -50,10 +39,10 @@ class PushController extends PreprocessingController
         $scopes = "1,0,0,0|0,1,0,0|0,0,1,0|0,0,0,1";
 
         LogService::getInstance()->insert(array("content" => $content,
-        "configuration" => $configuration,
-        "type" => $type,
-        "level" => $level,
-        "scopes" => $scopes));
+            "configuration" => $configuration,
+            "type" => $type,
+            "level" => $level,
+            "scopes" => $scopes));
 
 
         // Message payload
@@ -88,7 +77,18 @@ class PushController extends PreprocessingController
         return self::jsonEncodedResponse(null);
     }
 
-    private function tickleServer()
+
+    private function userTickle()
+    {
+        return self::notFoundResponse();
+    }
+
+    private function userDeviceTickle()
+    {
+        return self::notFoundResponse();
+    }
+
+    private function serverTickle()
     {
         return self::notFoundResponse();
     }

@@ -28,22 +28,6 @@ class UserDeviceService extends DBService
     // CRUD
     public function findByAuthID($auth_id)
     {
-        $statement = "
-            SELECT 
-            *
-            FROM
-            $this->table
-            WHERE authorized_id = :authorized_id;
-            ";
-
-        try {
-            $statement = $this->db->prepare($statement);
-            $statement->execute(array('authorized_id' => $auth_id));
-            //            $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
-            $result = $statement->fetchAll(\PDO::FETCH_CLASS, 'Src\Entity\User\UserDevice');
-            return $result;
-        } catch (\PDOException $e) {
-            exit($e->getMessage());
-        }
+        return $this->findFirstByAND(array('authorized_id' => $auth_id));
     }
 }

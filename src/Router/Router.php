@@ -32,7 +32,7 @@ class Router
     }
 
 
-    public function getControllerForRequest($uri, $requestHeaders, $requestMethod, $requestParams, $requestBody, $scopes, $interceptData)
+    public function getControllerForRequest($uri, $requestHeaders, $requestMethod, $requestParams, $requestBody, $scopes, $interceptData, $chanelId)
     {
         $apis = URIService::getInstance()->findByType(Constants::API);
         foreach ($apis as $api) {
@@ -42,9 +42,11 @@ class Router
                 preg_match("/{$api->representation}/", $uri, $matches);
 //             var_dump($matches);
                 if (sizeof($matches) > 0) {
+//                    var_dump($api);
                     $apiScopes = StringUtils::getScopes($api->scopes);
                     $clientScopes = StringUtils::getScopes($scopes);
-
+//                    var_dump($apiScopes);
+//                    var_dump($clientScopes);
                     foreach ($apiScopes as $apiScope) {
                         foreach ($clientScopes as $clientScope) {
 //                        var_dump($apiScope);
@@ -64,6 +66,8 @@ class Router
                                 $controller->setRequestBody($requestBody);
                                 $controller->setScopes($clientScopes);
                                 $controller->setInterceptData($interceptData);
+                                $controller->setChanelId($chanelId);
+
                                 $controller->init();
                                 return $controller;
                             }
@@ -120,7 +124,7 @@ class Router
 
         $interceptor = new Interceptor();
         $interceptor->authorize($uri, $requestHeaders, $requestMethod, $requestParams, $requestBody);
-        $controller = $this->getControllerForRequest($interceptor->uriComponents, $interceptor->requestHeaders, $interceptor->requestMethod, $interceptor->requestParams, $interceptor->requestBody, $interceptor->scopes, $interceptor->interceptData);
+        $controller = $this->getControllerForRequest($interceptor->uriComponents, $interceptor->requestHeaders, $interceptor->requestMethod, $interceptor->requestParams, $interceptor->requestBody, $interceptor->scopes, $interceptor->interceptData, $interceptor->chanelId);
         if ($controller != null && method_exists($controller, "processRequest")) {
             $controller->processRequest();
         } else {

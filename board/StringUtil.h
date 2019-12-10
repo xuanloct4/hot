@@ -15,5 +15,5 @@ public:
     String convertCharToString(char* chArray);
     boolean isNullOrEmpty(String text);
 private:
-    
+
 };

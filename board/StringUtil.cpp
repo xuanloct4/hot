@@ -5,7 +5,7 @@ StringUtil::StringUtil() {
 
 JsonObject& StringUtil::jsonFromString(String jsonText) {
     DynamicJsonBuffer jsonBuffer;
-    
+
     // You can use a String as your JSON input.
     // WARNING: the content of the String will be duplicated in the JsonBuffer.
     JsonObject& jsonObj = jsonBuffer.parseObject(jsonText);
@@ -20,7 +20,7 @@ JsonObject& StringUtil::jsonFromString(String jsonText) {
     //    Serial.println(it->key);
     //    Serial.println(it->value.as<char*>());
     //}
-    
+
     return jsonObj;
 }
 

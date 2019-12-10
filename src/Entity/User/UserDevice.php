@@ -22,6 +22,7 @@ class UserDevice extends Entity
     public $os;
     public $firmware;
     public $user_id;
+    public $board_id;
     public $status;
     public $authorized_id;
     public $configuration;

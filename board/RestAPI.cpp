@@ -3,7 +3,7 @@
 
 RestAPI::RestAPI() {
    stringUtil = new StringUtil();
-//   httpsClient = new WiFiClientSecure();  
+//   httpsClient = new WiFiClientSecure();
 }
 
 RestAPI::RestAPI(String authorization, int _chanelID) {
@@ -42,7 +42,7 @@ HTTPMethod RestAPI::httpMethodFromString(String text) {
         return HTTP_ANY;
     }
 }
-    
+
 String RestAPI::labelHTTPMethod(HTTPMethod httpMethod) {
     String methodLabel = "";
     switch (httpMethod) {
@@ -70,7 +70,7 @@ String RestAPI::labelHTTPMethod(HTTPMethod httpMethod) {
         default:
             break;
     }
-    
+
     return methodLabel;
 }
 
@@ -82,11 +82,16 @@ String RestAPI::makeHTTPRequest(HTTPMethod httpMethod, String host, String URL, 
         HTTPClient http;  //Declare an object of class HTTPClient
         int httpCode = -9999;
         String methodLabel = labelHTTPMethod(httpMethod);
-        
+
+        String fullPath = host;
+        fullPath += ":";
+        fullPath += String(httpPort);
+        fullPath += URL;
+
         switch (httpMethod) {
             case HTTP_GET:
             {
-                String queryParamsURL = URL;
+                String queryParamsURL = fullPath;
                 String queryParams = "";
                 JsonObject& paramsJsonObject = stringUtil->jsonFromString(paramsJsonText);
                 for (auto kv : paramsJsonObject) {
@@ -111,11 +116,12 @@ String RestAPI::makeHTTPRequest(HTTPMethod httpMethod, String host, String URL, 
                 break;
             case HTTP_POST:
             {
-                Serial.printf("[HTTP] [%s] ", methodLabel.c_str());Serial.print("URL: ");Serial.println(URL);
-                http.begin(URL);  //Specify request destination
+                Serial.printf("[HTTP] [%s] ", methodLabel.c_str());Serial.print("URL: ");Serial.println(fullPath);
+                http.begin(fullPath);  //Specify request destination
                 setDefaultHeaders(http);
                 setAdditionalHeaders(http, additonalHeaderJsonText, true);
                 httpCode = http.POST(bodyJsonText);
+                 Serial.printf("[POST]: ");Serial.println(bodyJsonText);
             }
                 break;
             default:
@@ -142,7 +148,7 @@ String RestAPI::makeHTTPRequest(HTTPMethod httpMethod, String host, String URL, 
 
 String RestAPI::makeHTTPSRequest(HTTPMethod httpMethod, String host, String URL, String paramsJsonText, String bodyJsonText, String additonalHeaderJsonText, int httpsPort) {
 ////Link to read data from https://jsonplaceholder.typicode.com/comments?postId=7
-////Web/Server address to read/write from 
+////Web/Server address to read/write from
 //  const char *host = "postman-echo.com";
 //  const int httpsPort = 443;  //HTTPS= 443 and HTTP = 80
 //SHA1 finger print of certificate use web browser to view and copy
@@ -187,7 +193,7 @@ String RestAPI::makeHTTPSRequest(HTTPMethod httpMethod, String host, String URL,
       Serial.print(".");
       r++;
   }
-  
+
   Serial.println("");
   if(r==30) {
     Serial.println("Connection failed");
@@ -195,7 +201,7 @@ String RestAPI::makeHTTPSRequest(HTTPMethod httpMethod, String host, String URL,
   else {
     Serial.println("Connected!");
   }
-  
+
   /*
    POST /post HTTP/1.1
    Host: postman-echo.com
@@ -205,9 +211,9 @@ String RestAPI::makeHTTPSRequest(HTTPMethod httpMethod, String host, String URL,
    User-Agent: ESP8266
    Connection: close
    Content-Length: 13
-   
+
    say=Hi&to=Mom
-    
+
    */
 
     String request = "";
@@ -215,7 +221,7 @@ String RestAPI::makeHTTPSRequest(HTTPMethod httpMethod, String host, String URL,
     request += " ";
     request += URL;
     request += " HTTP/1.1\r\n";
-    
+
     request += "Host: ";
     request += host;
     request += "\r\n";
@@ -231,7 +237,7 @@ String RestAPI::makeHTTPSRequest(HTTPMethod httpMethod, String host, String URL,
 
     Serial.println("Request: ");Serial.println(request);
     httpsClient.print(request);
-         
+
 //  httpsClient.print(String("GET ") + URL + " HTTP/1.1\r\n" +
 //               "Host: " + host + "\r\n" +
 //               "User-Agent: BuildFailureDetectorESP8266\r\n" +
@@ -239,9 +245,9 @@ String RestAPI::makeHTTPSRequest(HTTPMethod httpMethod, String host, String URL,
 //               "Chanel-ID: " + chanelID + "\r\n" +
 //               "Connection: close\r\n" +
 //               "\r\n");
- 
+
   Serial.println("Request sent!");
-  
+
   while (httpsClient.connected()) {
     String line = httpsClient.readStringUntil('\n');
     if (line == "\r") {
@@ -258,11 +264,11 @@ String RestAPI::makeHTTPSRequest(HTTPMethod httpMethod, String host, String URL,
         return "";
     }
   }
- 
+
   Serial.println("reply was:");
   Serial.println("==========");
   String response = "";
-  while(httpsClient.available()){        
+  while(httpsClient.available()){
     response += httpsClient.readStringUntil('\n');  //Read Line by Line
   }
   Serial.println("Response: ");Serial.println(response); //Print response
@@ -290,9 +296,9 @@ void RestAPI::setAdditionalHeaders(HTTPClient& http, String additonalHeaderJsonT
 
 String RestAPI::defaultHTTPSHeaders() {
    String headerJsonString = defaultHeadersJSON();
-   return additionalHTTPSHeaders(headerJsonString); 
+   return additionalHTTPSHeaders(headerJsonString);
 }
-      
+
 String RestAPI::additionalHTTPSHeaders(String additonalHeaderJsonText) {
     String additionalJsonString = "";
     JsonObject& additonalHeaderJsonObject = stringUtil->jsonFromString(additonalHeaderJsonText);
@@ -319,19 +325,19 @@ String RestAPI::defaultHeadersJSON() {
     headerJsonString += "\"Chanel-ID\": ";
     headerJsonString += chanelID;
     headerJsonString +=  ",";
-    
+
     headerJsonString += "\"Content-Type\": ";
     headerJsonString += "\"application/json;charset=utf-8\"";
-    headerJsonString +=  ",";
-     
-    headerJsonString += "\"User-Agent\": ";
-    headerJsonString += "\"ESP8266\"";
-    headerJsonString +=  ",";
+//    headerJsonString +=  ",";
+//
+//    headerJsonString += "\"User-Agent\": ";
+//    headerJsonString += "\"ESP8266\"";
+//    headerJsonString +=  ",";
+//
+//    headerJsonString += "\"Connection\": ";
+//    headerJsonString += "\"close\"";
 
-    headerJsonString += "\"Connection\": ";
-    headerJsonString += "\"close\"";
 
-    
     headerJsonString += "}";
     return headerJsonString;
 }

@@ -3,13 +3,57 @@
 JSONUtils::JSONUtils() {
 }
 
+JSONUtils::~JSONUtils() {
+}
+
+long JSONUtils::getLong(JsonObject& obj, char* key) {
+       if ((obj != JsonObject::invalid()) && containsNestedKey(obj, key)) {
+            return obj[key].as<long>();
+        }
+        return defaultNotFound;
+}
+
+int JSONUtils::getInteger(JsonObject& obj, char* key) {
+       if ((obj != JsonObject::invalid()) && containsNestedKey(obj, key)) {
+            return obj[key].as<int>();
+       }
+        return defaultNotFound;
+}
+
+String JSONUtils::getString(JsonObject& obj, char* key) {
+        if ((obj != JsonObject::invalid()) && containsNestedKey(obj, key)) {
+            return obj[key].as<String>();
+        }
+        return "";
+}
+
+double JSONUtils::getDouble(JsonObject& obj, char* key) {
+        if ((obj != JsonObject::invalid()) && containsNestedKey(obj, key)) {
+            return obj[key].as<double>();
+        }
+    return defaultNotFound;
+}
+
+JsonObject& JSONUtils::getObject(JsonObject& obj, char* key) {
+    if ((obj != JsonObject::invalid()) && containsNestedKey(obj, key)) {
+        return obj[key].as<JsonObject>();
+      }
+    return createJSONObject(jb);
+}
+
+JsonArray& JSONUtils::getArray(JsonObject& obj, char* key) {
+   if ((obj != JsonObject::invalid()) && containsNestedKey(obj, key)) {
+        return obj[key].as<JsonArray>();
+   }
+    return createJSONArray(jb);
+}
 
 bool JSONUtils::containsNestedKey(JsonObject& obj, char* key) {
     for (const JsonPair& pair : obj) {
         if (!strcmp(pair.key, key))
             return true;
 
-        if (containsNestedKey(pair.value.as<JsonObject>(), key)) 
+        if (containsNestedKey(pair.value.as<JsonObject>(), key))
             return true;
     }
 

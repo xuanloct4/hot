@@ -5,11 +5,17 @@ namespace Src\Controller\Listing;
 
 use Src\Controller\Configuration\Response\ConfigurationResponse;
 use Src\Controller\Configuration\Response\BoardConfigurationResponse;
+use Src\Controller\Configuration\Response\UserConfigurationResponse;
+use Src\Controller\Configuration\Response\UserDeviceConfigurationResponse;
 use Src\Controller\Controller;
 use Src\Controller\PreprocessingController;
+use Src\Definition\Comparison;
 use Src\Definition\Configuration;
 use Src\Service\Board\BoardConfigurationService;
 use Src\Service\Configuration\ConfigurationService;
+use Src\Service\User\UserDeviceService;
+use Src\Service\User\UserService;
+use Src\Utils\StringUtils;
 
 class ListingOthersController extends PreprocessingController
 {
@@ -31,16 +37,23 @@ class ListingOthersController extends PreprocessingController
     public function getAllBoardConfiguration()
     {
         try {
-            $boardConfigEntity = BoardConfigurationService::getInstance()->findFirst($this->id);
-            if ($boardConfigEntity != null) {
+            $boardConfigEntities = BoardConfigurationService::getInstance()->findAll();
+            $boardConfigurations = array();
+            if ($boardConfigEntities != null && sizeof($boardConfigEntities) > 0) {
+                for ($i = 0; $i < sizeof($boardConfigEntities); $i++) {
+                    $boardConfigEntity = $boardConfigEntities[$i];
+                    if($boardConfigEntity->scopes != null &&
+                        (StringUtils::compareScope($this->scopes, $boardConfigEntity->scopes) == Comparison::descending ||
+                            StringUtils::compareScope($this->scopes, $boardConfigEntity->scopes) == Comparison::equal)) {
+                        $boardConfiguration =  new BoardConfigurationResponse($boardConfigEntity);
+                        array_push($boardConfigurations, $boardConfiguration);
+                    }
 
-                $boardConfiguration = new BoardConfigurationResponse($boardConfigEntity);
-                $configurations = ConfigurationService::getInstance()->findByConfigIds($boardConfigEntity->configuration, $boardConfigEntity->scopes);
-                $boardConfiguration->configuration = ConfigurationResponse::toConfigurationResponses($configurations);
+                }
 
-                return Controller::jsonEncodedResponse($boardConfiguration);
+                return Controller::jsonEncodedResponse($boardConfigurations);
             }
-            return self::notFoundResponse();
+            return Controller::jsonEncodedResponse(array());
         } catch (\Exception $e) {
             return self::respondUnprocessableEntity();
         }
@@ -49,16 +62,23 @@ class ListingOthersController extends PreprocessingController
     public function getAllUserConfiguration()
     {
         try {
-            $boardConfigEntity = BoardConfigurationService::getInstance()->findFirst($this->id);
-            if ($boardConfigEntity != null) {
+            $userEntities = UserService::getInstance()->findAll();
+            $users = array();
+            if ($userEntities != null && sizeof($userEntities) > 0) {
+                for ($i = 0; $i < sizeof($userEntities); $i++) {
+                    $userEntity = $userEntities[$i];
+                    if($userEntity->scopes != null &&
+                        (StringUtils::compareScope($this->scopes, $userEntity->scopes) == Comparison::descending ||
+                            StringUtils::compareScope($this->scopes, $userEntity->scopes) == Comparison::equal)) {
+                        $user =  new UserConfigurationResponse($userEntity);
+                        array_push($users, $user);
+                    }
 
-                $boardConfiguration = new BoardConfigurationResponse($boardConfigEntity);
-                $configurations = ConfigurationService::getInstance()->findByConfigIds($boardConfigEntity->configuration, $boardConfigEntity->scopes);
-                $boardConfiguration->configuration = ConfigurationResponse::toConfigurationResponses($configurations);
+                }
 
-                return Controller::jsonEncodedResponse($boardConfiguration);
+                return Controller::jsonEncodedResponse($users);
             }
-            return self::notFoundResponse();
+            return Controller::jsonEncodedResponse(array());
         } catch (\Exception $e) {
             return self::respondUnprocessableEntity();
         }
@@ -67,16 +87,23 @@ class ListingOthersController extends PreprocessingController
     public function getAllUserDeviceConfiguration()
     {
         try {
-            $boardConfigEntity = BoardConfigurationService::getInstance()->findFirst($this->id);
-            if ($boardConfigEntity != null) {
+            $userDeviceEntities = UserDeviceService::getInstance()->findAll();
+            $userDevices = array();
+            if ($userDeviceEntities != null && sizeof($userDeviceEntities) > 0) {
+                for ($i = 0; $i < sizeof($userDeviceEntities); $i++) {
+                    $userDeviceEntity = $userDeviceEntities[$i];
+                    if($userDeviceEntity->scopes != null &&
+                        (StringUtils::compareScope($this->scopes, $userDeviceEntity->scopes) == Comparison::descending ||
+                            StringUtils::compareScope($this->scopes, $userDeviceEntity->scopes) == Comparison::equal)) {
+                        $userDevice =  new UserDeviceConfigurationResponse($userDeviceEntity);
+                        array_push($userDevices, $userDevice);
+                    }
 
-                $boardConfiguration = new BoardConfigurationResponse($boardConfigEntity);
-                $configurations = ConfigurationService::getInstance()->findByConfigIds($boardConfigEntity->configuration, $boardConfigEntity->scopes);
-                $boardConfiguration->configuration = ConfigurationResponse::toConfigurationResponses($configurations);
+                }
 
-                return Controller::jsonEncodedResponse($boardConfiguration);
+                return Controller::jsonEncodedResponse($userDevices);
             }
-            return self::notFoundResponse();
+            return Controller::jsonEncodedResponse(array());
         } catch (\Exception $e) {
             return self::respondUnprocessableEntity();
         }
@@ -84,19 +111,7 @@ class ListingOthersController extends PreprocessingController
 
     public function getAllServerConfiguration()
     {
-        try {
-            $boardConfigEntity = BoardConfigurationService::getInstance()->findFirst($this->id);
-            if ($boardConfigEntity != null) {
 
-                $boardConfiguration = new BoardConfigurationResponse($boardConfigEntity);
-                $configurations = ConfigurationService::getInstance()->findByConfigIds($boardConfigEntity->configuration, $boardConfigEntity->scopes);
-                $boardConfiguration->configuration = ConfigurationResponse::toConfigurationResponses($configurations);
-
-                return Controller::jsonEncodedResponse($boardConfiguration);
-            }
-            return self::notFoundResponse();
-        } catch (\Exception $e) {
-            return self::respondUnprocessableEntity();
-        }
+        return self::notFoundResponse();
     }
 }

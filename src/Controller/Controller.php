@@ -27,6 +27,7 @@ abstract class Controller implements iController
     protected $requestBody;
 
     protected $interceptData;
+    protected $chanelId;
     protected $scopes;
     public function __construct()
     {
@@ -105,6 +106,24 @@ abstract class Controller implements iController
         $this->interceptData = $interceptData;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getChanelId()
+    {
+        return $this->chanelId;
+    }
+
+    /**
+     * @param mixed $chanelId
+     */
+    public function setChanelId($chanelId)
+    {
+        $this->chanelId = $chanelId;
+    }
+
+
+
     public function isMatchURLPattern()
     {
         // return true;
@@ -162,7 +181,10 @@ abstract class Controller implements iController
     public static function notFoundResponse()
     {
         $response['status_code_header'] = 'HTTP/1.1 404 Not Found';
-        $response['body'] = null;
+        $response['body'] = json_encode([
+            'code' => '404',
+            'message' => 'Not found'
+        ]);
         return $response;
     }
 

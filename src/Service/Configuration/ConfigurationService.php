@@ -163,6 +163,32 @@ class ConfigurationService extends DBService
         return $query;
     }
 
+    public function buildOrderByClause(array $order_by_list)
+    {
+        $query = " ";
+        $orderByKeyword = "ORDER BY";
+        $descKeyword = "DESC";
+        $ascKeyword = "ASC";
+
+        for ($i = 0; $i < sizeof($order_by_list); $i++) {
+            if ($i == 0) {
+                $query = $query . $orderByKeyword . " ";
+            }
+
+            if ($i > 0) {
+                $query = $query . ", ";
+            }
+
+            $query = $query . $order_by_list[$i]->column . " ";
+            if ($order_by_list[$i]->isAscending) {
+                $query = $query . $ascKeyword;
+            } else {
+                $query = $query . $descKeyword;
+            }
+        }
+        return $query;
+    }
+
 
     public function searchDB(ConfigurationQuery $request)
     {
@@ -212,7 +238,7 @@ class ConfigurationService extends DBService
         }
         array_push($queryList, $isDeleted_query);
 
-        if (!$request->is_deleted) {
+        if (!$request->is_activated) {
             $isActivated_query = " is_activated = 0";
         } else {
             $isActivated_query = " is_activated = 1";
@@ -238,6 +264,7 @@ class ConfigurationService extends DBService
         $id_query = $this->buildOrAndQueryForColumn($id_spec, "id", $id_spec->isAnd);
         $whereStatement = $id_query . " AND (";
         $whereStatement = $whereStatement . $this->buildWhereClause($queryList, $request->isAnd) . ")";
+        $whereStatement = $whereStatement . $this->buildOrderByClause($request->order_by_list);
 
 
         $statement = "
@@ -248,7 +275,7 @@ class ConfigurationService extends DBService
             WHERE $whereStatement;
             ";
 
-        var_dump($statement);
+//        var_dump($statement);
         return parent::queryDB($statement);
     }
 }

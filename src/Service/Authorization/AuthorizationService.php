@@ -31,10 +31,14 @@ class AuthorizationService extends DBService
 //        $result = $this->findFirstByAND(array("uuid" => $realUUID, "authorized_code" => $code));
         $list = $this->findByAND(array("uuid" => $realUUID));
         $decodedAuthorizedCode = RSA::decrypt($code);
-        foreach ($list as $item) {
-            $decodedItemAuthorizedCode = RSA::decrypt($item->authorized_code);
-            if (StringUtils::compareString($decodedAuthorizedCode,$decodedItemAuthorizedCode)) {
-                return $item;
+//        var_dump($decodedAuthorizedCode);
+        if (!StringUtils::compareString(trim($decodedAuthorizedCode),"")) {
+            foreach ($list as $item) {
+                $decodedItemAuthorizedCode = RSA::decrypt($item->authorized_code);
+//                var_dump($decodedItemAuthorizedCode);
+                if (StringUtils::compareString($decodedAuthorizedCode, $decodedItemAuthorizedCode)) {
+                    return $item;
+                }
             }
         }
         return null;
