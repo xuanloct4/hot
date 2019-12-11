@@ -4,6 +4,7 @@ namespace Src\Controller\Creating;
 
 
 use Src\Controller\Creating\Request\CreateBoardConfigurationRequest;
+use Src\Controller\Creating\Request\CreateConfigurationRequest;
 use Src\Controller\Creating\Request\CreateServerConfigurationRequest;
 use Src\Controller\Creating\Request\CreateUserConfigurationRequest;
 use Src\Controller\Creating\Request\CreateUserDeviceConfiguationRequest;
@@ -11,9 +12,11 @@ use Src\Controller\Creating\Response\CreateConfigurationResponse;
 use Src\Controller\PreprocessingController;
 use Src\Definition\Configuration;
 use Src\Service\Board\BoardConfigurationService;
+use Src\Service\Configuration\ConfigurationService;
 use Src\Service\Server\ServerConfigurationService;
 use Src\Service\User\UserDeviceService;
 use Src\Service\User\UserService;
+use Src\Utils\StringUtils;
 
 class CreatingConfiguration extends PreprocessingController
 {
@@ -35,23 +38,34 @@ class CreatingConfiguration extends PreprocessingController
     public function creatingBoardConfiguration()
     {
         try {
-            $request = new CreateBoardConfigurationRequest($this->requestBody);
-            $arr = $request->toArray();
-            $id = BoardConfigurationService::getInstance()->insert($arr);
-            return $this->jsonEncodedResponse(new CreateConfigurationResponse($id));
+            $boardEntity = $this->interceptData;
+            $request = new CreateConfigurationRequest($this->requestBody);
+            $configurationId = ConfigurationService::getInstance()->insert($request);
+
+            $configurationIds = StringUtils::trimStringToArrayWithNonEmptyElement("|",$boardEntity->configuration);
+            array_push($configurationIds, $configurationId);
+            BoardConfigurationService::getInstance()->update(array("id" => $boardEntity->id,
+                "configuration" => StringUtils::arrayToString("|", $configurationIds)));
+
+            return $this->jsonEncodedResponse(new CreateConfigurationResponse($configurationId));
         } catch (\Exception $e) {
             return self::respondUnprocessableEntity();
         }
-
     }
 
     public function creatingUserConfiguration()
     {
         try {
-            $request = new CreateUserConfigurationRequest($this->requestBody);
-            $arr = $request->toArray();
-            $id = UserService::getInstance()->insert($arr);
-            return $this->jsonEncodedResponse(new CreateConfigurationResponse($id));
+            $userEntity = $this->interceptData;
+            $request = new CreateConfigurationRequest($this->requestBody);
+            $configurationId = ConfigurationService::getInstance()->insert($request);
+
+            $configurationIds = StringUtils::trimStringToArrayWithNonEmptyElement("|",$userEntity->preferences);
+            array_push($configurationIds, $configurationId);
+            BoardConfigurationService::getInstance()->update(array("id" => $userEntity->id,
+                "configuration" => StringUtils::arrayToString("|", $configurationIds)));
+
+            return $this->jsonEncodedResponse(new CreateConfigurationResponse($configurationId));
         } catch (\Exception $e) {
             return self::respondUnprocessableEntity();
         }
@@ -60,10 +74,16 @@ class CreatingConfiguration extends PreprocessingController
     public function creatingUserDeviceConfiguration()
     {
         try {
-            $request = new CreateUserDeviceConfiguationRequest($this->requestBody);
-            $arr = $request->toArray();
-            $id = UserDeviceService::getInstance()->insert($arr);
-            return $this->jsonEncodedResponse(new CreateConfigurationResponse($id));
+            $userDeviceEntity = $this->interceptData;
+            $request = new CreateConfigurationRequest($this->requestBody);
+            $configurationId = ConfigurationService::getInstance()->insert($request);
+
+            $configurationIds = StringUtils::trimStringToArrayWithNonEmptyElement("|",$userDeviceEntity->configuration);
+            array_push($configurationIds, $configurationId);
+            BoardConfigurationService::getInstance()->update(array("id" => $userDeviceEntity->id,
+                "configuration" => StringUtils::arrayToString("|", $configurationIds)));
+
+            return $this->jsonEncodedResponse(new CreateConfigurationResponse($configurationId));
         } catch (\Exception $e) {
             return self::respondUnprocessableEntity();
         }
@@ -72,10 +92,16 @@ class CreatingConfiguration extends PreprocessingController
     public function creatingServerConfiguration()
     {
         try {
-            $request = new CreateServerConfigurationRequest($this->requestBody);
-            $arr = $request->toArray();
-            $id = ServerConfigurationService::getInstance()->insert($arr);
-            return $this->jsonEncodedResponse(new CreateConfigurationResponse($id));
+            $serverConfigurationEntity = $this->interceptData;
+            $request = new CreateConfigurationRequest($this->requestBody);
+            $configurationId = ConfigurationService::getInstance()->insert($request);
+
+            $configurationIds = StringUtils::trimStringToArrayWithNonEmptyElement("|",$serverConfigurationEntity->configuration);
+            array_push($configurationIds, $configurationId);
+            BoardConfigurationService::getInstance()->update(array("id" => $serverConfigurationEntity->id,
+                "configuration" => StringUtils::arrayToString("|", $configurationIds)));
+
+            return $this->jsonEncodedResponse(new CreateConfigurationResponse($configurationId));
         } catch (\Exception $e) {
             return self::respondUnprocessableEntity();
         }

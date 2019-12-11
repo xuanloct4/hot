@@ -1,8 +1,14 @@
 <?php
 
-namespace Src\Controller\Deleting;
+namespace Src\Controller\Updating;
+
 
 use Src\Controller\PreprocessingController;
+use Src\Controller\Updating\Request\UpdateBoardConfigurationRequest;
+use Src\Controller\Updating\Request\UpdateConfigurationRequest;
+use Src\Controller\Updating\Request\UpdateServerConfigurationRequest;
+use Src\Controller\Updating\Request\UpdateUserConfigurationRequest;
+use Src\Controller\Updating\Request\UpdateUserDeviceConfiguationRequest;
 use Src\Definition\Configuration;
 use Src\Service\Board\BoardConfigurationService;
 use Src\Service\Configuration\ConfigurationService;
@@ -11,25 +17,19 @@ use Src\Service\User\UserDeviceService;
 use Src\Service\User\UserService;
 use Src\Utils\StringUtils;
 
-class HardDeletingConfiguration extends PreprocessingController
+class UpdateConfiguration extends PreprocessingController
 {
-    private $id;
-    private $idComponentNumber = 3;
-
-    function processDELETERequest()
+    function processPUTRequest()
     {
-        if (sizeof($this->uriComponents) > Configuration::BASE_URL_COMPONENT_NUMBER + $this->idComponentNumber) {
-            $this->id = Configuration::getConfiguration($this->uriComponents[Configuration::BASE_URL_COMPONENT_NUMBER + $this->idComponentNumber]);
-        }
         switch ($this->configuration) {
             case Configuration::BOARD:
-                return $this->deletingBoardConfiguration();
+                return $this->updatingBoardConfiguration();
             case Configuration::USER:
-                return $this->deletingUserConfiguration();
+                return $this->updatingUserConfiguration();
             case Configuration::USER_DEVICE:
-                return $this->deletingUserDeviceConfiguration();
+                return $this->updatingUserDeviceConfiguration();
             case Configuration::SERVER:
-                return $this->deletingServerConfiguration();
+                return $this->updatingServerConfiguration();
         }
         return self::notFoundResponse();
     }
@@ -37,8 +37,10 @@ class HardDeletingConfiguration extends PreprocessingController
     private function updateConfiguration(array $configurationIds)
     {
         try {
-            if (StringUtils::isElementInArray($this->id, $configurationIds)) {
-                ConfigurationService::getInstance()->delete($this->id);
+            $request = new UpdateConfigurationRequest($this->requestBody);
+            if (StringUtils::isElementInArray($request->id, $configurationIds)) {
+                $arr = $request->toArray();
+                ConfigurationService::getInstance()->update($arr);
                 return $this->jsonEncodedResponse(null);
             } else {
                 return self::notFoundResponse();
@@ -48,28 +50,28 @@ class HardDeletingConfiguration extends PreprocessingController
         }
     }
 
-    public function deletingBoardConfiguration()
+    public function updatingBoardConfiguration()
     {
         $boardEntity = $this->interceptData;
         $configurationIds = StringUtils::trimStringToArrayWithNonEmptyElement("|", $boardEntity->configuration);
         return $this->updateConfiguration($configurationIds);
     }
 
-    public function deletingUserConfiguration()
+    public function updatingUserConfiguration()
     {
         $userEntity = $this->interceptData;
         $configurationIds = StringUtils::trimStringToArrayWithNonEmptyElement("|", $userEntity->preferences);
         return $this->updateConfiguration($configurationIds);
     }
 
-    public function deletingUserDeviceConfiguration()
+    public function updatingUserDeviceConfiguration()
     {
         $userDeviceEntity = $this->interceptData;
         $configurationIds = StringUtils::trimStringToArrayWithNonEmptyElement("|", $userDeviceEntity->configuration);
         return $this->updateConfiguration($configurationIds);
     }
 
-    public function deletingServerConfiguration()
+    public function updatingServerConfiguration()
     {
         $serverConfigurationEntity = $this->interceptData;
         $configurationIds = StringUtils::trimStringToArrayWithNonEmptyElement("|", $serverConfigurationEntity->configuration);

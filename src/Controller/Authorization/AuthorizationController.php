@@ -88,7 +88,7 @@ class AuthorizationController extends PreprocessingController
                 array_push($tokens, "$tokenId");
             }
 
-            $updatedTokens = StringUtils::arrayToString(",",$tokens);
+            $updatedTokens = StringUtils::arrayToString("|",$tokens);
             AuthorizationService::getInstance()->update(array('id' => $a->id,
                 "tokens" => $updatedTokens));
 

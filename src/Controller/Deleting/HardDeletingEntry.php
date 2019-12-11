@@ -5,13 +5,11 @@ namespace Src\Controller\Deleting;
 use Src\Controller\PreprocessingController;
 use Src\Definition\Configuration;
 use Src\Service\Board\BoardConfigurationService;
-use Src\Service\Configuration\ConfigurationService;
 use Src\Service\Server\ServerConfigurationService;
 use Src\Service\User\UserDeviceService;
 use Src\Service\User\UserService;
-use Src\Utils\StringUtils;
 
-class HardDeletingConfiguration extends PreprocessingController
+class HardDeletingEntry extends PreprocessingController
 {
     private $id;
     private $idComponentNumber = 3;
@@ -34,45 +32,43 @@ class HardDeletingConfiguration extends PreprocessingController
         return self::notFoundResponse();
     }
 
-    private function updateConfiguration(array $configurationIds)
+    public function deletingBoardConfiguration()
     {
         try {
-            if (StringUtils::isElementInArray($this->id, $configurationIds)) {
-                ConfigurationService::getInstance()->delete($this->id);
-                return $this->jsonEncodedResponse(null);
-            } else {
-                return self::notFoundResponse();
-            }
+            BoardConfigurationService::getInstance()->delete($this->id);
+            return $this->jsonEncodedResponse(null);
         } catch (\Exception $e) {
             return self::respondUnprocessableEntity();
         }
     }
 
-    public function deletingBoardConfiguration()
-    {
-        $boardEntity = $this->interceptData;
-        $configurationIds = StringUtils::trimStringToArrayWithNonEmptyElement("|", $boardEntity->configuration);
-        return $this->updateConfiguration($configurationIds);
-    }
-
     public function deletingUserConfiguration()
     {
-        $userEntity = $this->interceptData;
-        $configurationIds = StringUtils::trimStringToArrayWithNonEmptyElement("|", $userEntity->preferences);
-        return $this->updateConfiguration($configurationIds);
+        try {
+            UserService::getInstance()->delete($this->id);
+            return $this->jsonEncodedResponse(null);
+        } catch (\Exception $e) {
+            return self::respondUnprocessableEntity();
+        }
     }
 
     public function deletingUserDeviceConfiguration()
     {
-        $userDeviceEntity = $this->interceptData;
-        $configurationIds = StringUtils::trimStringToArrayWithNonEmptyElement("|", $userDeviceEntity->configuration);
-        return $this->updateConfiguration($configurationIds);
+        try {
+            UserDeviceService::getInstance()->delete($this->id);
+            return $this->jsonEncodedResponse(null);
+        } catch (\Exception $e) {
+            return self::respondUnprocessableEntity();
+        }
     }
 
     public function deletingServerConfiguration()
     {
-        $serverConfigurationEntity = $this->interceptData;
-        $configurationIds = StringUtils::trimStringToArrayWithNonEmptyElement("|", $serverConfigurationEntity->configuration);
-        return $this->updateConfiguration($configurationIds);
+        try {
+            ServerConfigurationService::getInstance()->delete($this->id);
+            return $this->jsonEncodedResponse(null);
+        } catch (\Exception $e) {
+            return self::respondUnprocessableEntity();
+        }
     }
 }

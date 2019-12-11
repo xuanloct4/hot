@@ -18,7 +18,7 @@ class CreateUserDeviceConfiguationRequest extends Request
     public $status;
     public $authorized_id;
     public $reference_device;
-    public $configuration;
+//    public $configuration;
     public $scopes;
     public $is_activated;
     public $is_deleted;
@@ -36,7 +36,7 @@ class CreateUserDeviceConfiguationRequest extends Request
         $this->status = $arr["status"];
         $this->authorized_id = $arr["authorized_id"];
         $this->reference_device = $arr["reference_device"];
-        $this->configuration = $arr["configuration"];
+//        $this->configuration = $arr["configuration"];
         $this->scopes = $arr["scopes"];
         $this->is_activated = b'0';
         $this->is_deleted = b'0';

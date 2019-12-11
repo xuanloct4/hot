@@ -4,11 +4,14 @@ namespace Src\Controller\Deleting;
 
 
 use Src\Controller\PreprocessingController;
+use Src\Controller\Updating\Request\UpdateConfigurationRequest;
 use Src\Definition\Configuration;
 use Src\Service\Board\BoardConfigurationService;
+use Src\Service\Configuration\ConfigurationService;
 use Src\Service\Server\ServerConfigurationService;
 use Src\Service\User\UserDeviceService;
 use Src\Service\User\UserService;
+use Src\Utils\StringUtils;
 
 class DeactivatingConfiguration extends PreprocessingController
 {
@@ -33,47 +36,46 @@ class DeactivatingConfiguration extends PreprocessingController
         return self::notFoundResponse();
     }
 
-    public function updateDeactivatedBoardConfiguration()
+    private function updateConfiguration(array $configurationIds)
     {
         try {
-            BoardConfigurationService::getInstance()->update(array("id" => $this->id,
-                "is_activated" => b'0'));
-            return $this->jsonEncodedResponse(null);
+            if (StringUtils::isElementInArray($this->id, $configurationIds)) {
+                ConfigurationService::getInstance()->update(array("id" => $this->id,
+                    "is_activated" => b'0'));
+                return $this->jsonEncodedResponse(null);
+            } else {
+                return self::notFoundResponse();
+            }
         } catch (\Exception $e) {
             return self::respondUnprocessableEntity();
         }
+    }
+
+    public function updateDeactivatedBoardConfiguration()
+    {
+        $boardEntity = $this->interceptData;
+        $configurationIds = StringUtils::trimStringToArrayWithNonEmptyElement("|", $boardEntity->configuration);
+        return $this->updateConfiguration($configurationIds);
     }
 
     public function updateDeactivatedUserConfiguration()
     {
-        try {
-            UserService::getInstance()->update(array("id" => $this->id,
-                "is_activated" => b'0'));
-            return $this->jsonEncodedResponse(null);
-        } catch (\Exception $e) {
-            return self::respondUnprocessableEntity();
-        }
+        $userEntity = $this->interceptData;
+        $configurationIds = StringUtils::trimStringToArrayWithNonEmptyElement("|", $userEntity->preferences);
+        return $this->updateConfiguration($configurationIds);
     }
 
     public function updateDeactivatedUserDeviceConfiguration()
     {
-        try {
-            UserDeviceService::getInstance()->update(array("id" => $this->id,
-                "is_activated" => b'0'));
-            return $this->jsonEncodedResponse(null);
-        } catch (\Exception $e) {
-            return self::respondUnprocessableEntity();
-        }
+        $userDeviceEntity = $this->interceptData;
+        $configurationIds = StringUtils::trimStringToArrayWithNonEmptyElement("|", $userDeviceEntity->configuration);
+        return $this->updateConfiguration($configurationIds);
     }
 
     public function updateDeactivatedServerConfiguration()
     {
-        try {
-            ServerConfigurationService::getInstance()->update(array("id" => $this->id,
-                "is_activated" => b'0'));
-            return $this->jsonEncodedResponse(null);
-        } catch (\Exception $e) {
-            return self::respondUnprocessableEntity();
-        }
+        $serverConfigurationEntity = $this->interceptData;
+        $configurationIds = StringUtils::trimStringToArrayWithNonEmptyElement("|", $serverConfigurationEntity->configuration);
+        return $this->updateConfiguration($configurationIds);
     }
 }

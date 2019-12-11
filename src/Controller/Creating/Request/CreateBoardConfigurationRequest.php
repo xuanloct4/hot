@@ -14,7 +14,7 @@ class CreateBoardConfigurationRequest extends Request
     public $topos;
     public $status;
     public $authorized_id;
-    public $configuration;
+//    public $configuration;
     public $scopes;
     public $is_activated;
     public $is_deleted;
@@ -28,7 +28,7 @@ class CreateBoardConfigurationRequest extends Request
         $this->topos = $arr["topos"];
         $this->status = $arr["status"];
         $this->authorized_id = $arr["authorized_id"];
-        $this->configuration = $arr["configuration"];
+//        $this->configuration = $arr["configuration"];
         $this->scopes = $arr["scopes"];
         $this->is_activated = b'0';
         $this->is_deleted = b'0';

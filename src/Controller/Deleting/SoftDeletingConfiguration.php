@@ -6,9 +6,11 @@ namespace Src\Controller\Deleting;
 use Src\Controller\PreprocessingController;
 use Src\Definition\Configuration;
 use Src\Service\Board\BoardConfigurationService;
+use Src\Service\Configuration\ConfigurationService;
 use Src\Service\Server\ServerConfigurationService;
 use Src\Service\User\UserDeviceService;
 use Src\Service\User\UserService;
+use Src\Utils\StringUtils;
 
 class SoftDeletingConfiguration extends PreprocessingController
 {
@@ -33,43 +35,46 @@ class SoftDeletingConfiguration extends PreprocessingController
         return self::notFoundResponse();
     }
 
-    public function updateDeletedBoardConfiguration() {
+    private function updateConfiguration(array $configurationIds)
+    {
         try {
-            BoardConfigurationService::getInstance()->update(array("id" => $this->id,
-                "is_deleted" => b'1'));
-            return $this->jsonEncodedResponse(null);
+            if (StringUtils::isElementInArray($this->id, $configurationIds)) {
+                ConfigurationService::getInstance()->update(array("id" => $this->id,
+                    "is_deleted" => b'1'));
+                return $this->jsonEncodedResponse(null);
+            } else {
+                return self::notFoundResponse();
+            }
         } catch (\Exception $e) {
             return self::respondUnprocessableEntity();
         }
     }
 
-    public function updateDeletedUserConfiguration() {
-        try {
-            UserService::getInstance()->update(array("id" => $this->id,
-                "is_deleted" => b'1'));
-            return $this->jsonEncodedResponse(null);
-        } catch (\Exception $e) {
-            return self::respondUnprocessableEntity();
-        }
+    public function updateDeletedBoardConfiguration()
+    {
+        $boardEntity = $this->interceptData;
+        $configurationIds = StringUtils::trimStringToArrayWithNonEmptyElement("|", $boardEntity->configuration);
+        return $this->updateConfiguration($configurationIds);
     }
 
-    public function updateDeletedUserDeviceConfiguration() {
-        try {
-            UserDeviceService::getInstance()->update(array("id" => $this->id,
-                "is_deleted" => b'1'));
-            return $this->jsonEncodedResponse(null);
-        } catch (\Exception $e) {
-            return self::respondUnprocessableEntity();
-        }
+    public function updateDeletedUserConfiguration()
+    {
+        $userEntity = $this->interceptData;
+        $configurationIds = StringUtils::trimStringToArrayWithNonEmptyElement("|", $userEntity->preferences);
+        return $this->updateConfiguration($configurationIds);
     }
 
-    public function updateDeletedServerConfiguration() {
-        try {
-            ServerConfigurationService::getInstance()->update(array("id" => $this->id,
-                "is_deleted" => b'1'));
-            return $this->jsonEncodedResponse(null);
-        } catch (\Exception $e) {
-            return self::respondUnprocessableEntity();
-        }
+    public function updateDeletedUserDeviceConfiguration()
+    {
+        $userDeviceEntity = $this->interceptData;
+        $configurationIds = StringUtils::trimStringToArrayWithNonEmptyElement("|", $userDeviceEntity->configuration);
+        return $this->updateConfiguration($configurationIds);
+    }
+
+    public function updateDeletedServerConfiguration()
+    {
+        $serverConfigurationEntity = $this->interceptData;
+        $configurationIds = StringUtils::trimStringToArrayWithNonEmptyElement("|", $serverConfigurationEntity->configuration);
+        return $this->updateConfiguration($configurationIds);
     }
 }

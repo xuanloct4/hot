@@ -14,7 +14,7 @@ class CreateUserConfigurationRequest extends Request
     public $gender;
     public $status;
     public $authorized_id;
-    public $preferences;
+//    public $preferences;
     public $scopes;
     public $is_activated;
     public $is_deleted;
@@ -28,7 +28,7 @@ class CreateUserConfigurationRequest extends Request
         $this->gender = $arr["gender"];
         $this->status = $arr["status"];
         $this->authorized_id = $arr["authorized_id"];
-        $this->preferences = $arr["preferences"];
+//        $this->preferences = $arr["preferences"];
         $this->scopes = $arr["scopes"];
         $this->is_activated = b'0';
         $this->is_deleted = b'0';

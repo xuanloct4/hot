@@ -172,6 +172,16 @@ class StringUtils
         return $str;
     }
 
+    public static function isElementInArray($element, array $arr) {
+        for ($i = 0; $i < sizeof($arr); $i++) {
+            $item = $arr[$i];
+            if (StringUtils::compareStringIgnoreCase($item, $element)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static function isNullOrEmpty($str) {
         if ($str == null || strcmp("", trim($str)) == 0) {
             return true;

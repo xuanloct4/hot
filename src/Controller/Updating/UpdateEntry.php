@@ -14,7 +14,7 @@ use Src\Service\Server\ServerConfigurationService;
 use Src\Service\User\UserDeviceService;
 use Src\Service\User\UserService;
 
-class UpdateConfigurationController extends PreprocessingController
+class UpdateEntry extends PreprocessingController
 {
     function processPUTRequest()
     {
@@ -31,7 +31,8 @@ class UpdateConfigurationController extends PreprocessingController
         return self::notFoundResponse();
     }
 
-    public function updatingBoardConfiguration() {
+    public function updatingBoardConfiguration()
+    {
         try {
             $request = new UpdateBoardConfigurationRequest($this->requestBody);
             $arr = $request->toArray();
@@ -42,7 +43,8 @@ class UpdateConfigurationController extends PreprocessingController
         }
     }
 
-    public function updatingUserConfiguration() {
+    public function updatingUserConfiguration()
+    {
         try {
             $request = new UpdateUserConfigurationRequest($this->requestBody);
             $arr = $request->toArray();
@@ -53,7 +55,8 @@ class UpdateConfigurationController extends PreprocessingController
         }
     }
 
-    public function updatingUserDeviceConfiguration() {
+    public function updatingUserDeviceConfiguration()
+    {
         try {
             $request = new UpdateUserDeviceConfiguationRequest($this->requestBody);
             $arr = $request->toArray();
@@ -64,7 +67,8 @@ class UpdateConfigurationController extends PreprocessingController
         }
     }
 
-    public function updatingServerConfiguration() {
+    public function updatingServerConfiguration()
+    {
         try {
             $request = new UpdateServerConfigurationRequest($this->requestBody);
             $arr = $request->toArray();
