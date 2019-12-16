@@ -32,7 +32,7 @@ class Router
     }
 
 
-    public function getControllerForRequest($uri, $requestHeaders, $requestMethod, $requestParams, $requestBody, $scopes, $interceptData, $chanelId)
+    public function getControllerForRequest($uri, $requestHeaders, $requestMethod, $requestParams, $requestBody, $scopes, $interceptData, $chanelId, $token, $authorization)
     {
         $apis = URIService::getInstance()->findByType(Constants::API);
         foreach ($apis as $api) {
@@ -49,8 +49,6 @@ class Router
 //                    var_dump($clientScopes);
                     foreach ($apiScopes as $apiScope) {
                         foreach ($clientScopes as $clientScope) {
-//                        var_dump($apiScope);
-//                        var_dump($clientScope);
                             if (StringUtils::compareScope($clientScope, $apiScope) == Comparison::descending || StringUtils::compareScope($clientScope, $apiScope) == Comparison::equal) {
                                 $uriComponents = explode('/', $uri);
                                 array_filter($uriComponents);
@@ -67,6 +65,8 @@ class Router
                                 $controller->setScopes($clientScopes);
                                 $controller->setInterceptData($interceptData);
                                 $controller->setChanelId($chanelId);
+                                $controller->setToken($token);
+                                $controller->setAuthorization($authorization);
 
                                 $controller->init();
                                 return $controller;
@@ -124,7 +124,7 @@ class Router
 
         $interceptor = new Interceptor();
         $interceptor->authorize($uri, $requestHeaders, $requestMethod, $requestParams, $requestBody);
-        $controller = $this->getControllerForRequest($interceptor->uriComponents, $interceptor->requestHeaders, $interceptor->requestMethod, $interceptor->requestParams, $interceptor->requestBody, $interceptor->scopes, $interceptor->interceptData, $interceptor->chanelId);
+        $controller = $this->getControllerForRequest($interceptor->uriComponents, $interceptor->requestHeaders, $interceptor->requestMethod, $interceptor->requestParams, $interceptor->requestBody, $interceptor->scopes, $interceptor->interceptData, $interceptor->chanelId, $interceptor->token, $interceptor->authorization);
         if ($controller != null && method_exists($controller, "processRequest")) {
             $controller->processRequest();
         } else {

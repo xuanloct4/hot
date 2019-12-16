@@ -5,6 +5,7 @@ namespace Src\Controller\PushNotification;
 
 use Src\Controller\PreprocessingController;
 use Src\Controller\PushNotification\Request\UserDeviceRegisterRequest;
+use Src\Definition\Configuration;
 use Src\Service\User\UserDeviceService;
 
 class RegisterController extends PreprocessingController

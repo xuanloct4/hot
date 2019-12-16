@@ -1,5 +1,5 @@
 <?php
-    namespace Src\Controller\Profile\Request;
+    namespace Src\Controller\Detail\Request;
 
     use Src\Controller\Request;
 

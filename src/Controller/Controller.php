@@ -29,6 +29,8 @@ abstract class Controller implements iController
     protected $interceptData;
     protected $chanelId;
     protected $scopes;
+    protected $token;
+    protected $authorization;
     public function __construct()
     {
         // $this->init();
@@ -122,7 +124,37 @@ abstract class Controller implements iController
         $this->chanelId = $chanelId;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getToken()
+    {
+        return $this->token;
+    }
 
+    /**
+     * @param mixed $token
+     */
+    public function setToken($token)
+    {
+        $this->token = $token;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAuthorization()
+    {
+        return $this->authorization;
+    }
+
+    /**
+     * @param mixed $authorization
+     */
+    public function setAuthorization($authorization)
+    {
+        $this->authorization = $authorization;
+    }
 
     public function isMatchURLPattern()
     {

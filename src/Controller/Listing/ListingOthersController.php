@@ -43,8 +43,7 @@ class ListingOthersController extends PreprocessingController
                 for ($i = 0; $i < sizeof($boardConfigEntities); $i++) {
                     $boardConfigEntity = $boardConfigEntities[$i];
                     if($boardConfigEntity->scopes != null &&
-                        (StringUtils::compareScope($this->scopes, $boardConfigEntity->scopes) == Comparison::descending ||
-                            StringUtils::compareScope($this->scopes, $boardConfigEntity->scopes) == Comparison::equal)) {
+                        (StringUtils::compareScope($this->scopes, $boardConfigEntity->scopes) == Comparison::descending)) {
                         $boardConfiguration =  new BoardConfigurationResponse($boardConfigEntity);
                         array_push($boardConfigurations, $boardConfiguration);
                     }
@@ -68,8 +67,7 @@ class ListingOthersController extends PreprocessingController
                 for ($i = 0; $i < sizeof($userEntities); $i++) {
                     $userEntity = $userEntities[$i];
                     if($userEntity->scopes != null &&
-                        (StringUtils::compareScope($this->scopes, $userEntity->scopes) == Comparison::descending ||
-                            StringUtils::compareScope($this->scopes, $userEntity->scopes) == Comparison::equal)) {
+                        (StringUtils::compareScope($this->scopes, $userEntity->scopes) == Comparison::descending)) {
                         $user =  new UserConfigurationResponse($userEntity);
                         array_push($users, $user);
                     }
@@ -93,8 +91,7 @@ class ListingOthersController extends PreprocessingController
                 for ($i = 0; $i < sizeof($userDeviceEntities); $i++) {
                     $userDeviceEntity = $userDeviceEntities[$i];
                     if($userDeviceEntity->scopes != null &&
-                        (StringUtils::compareScope($this->scopes, $userDeviceEntity->scopes) == Comparison::descending ||
-                            StringUtils::compareScope($this->scopes, $userDeviceEntity->scopes) == Comparison::equal)) {
+                        (StringUtils::compareScope($this->scopes, $userDeviceEntity->scopes) == Comparison::descending)) {
                         $userDevice =  new UserDeviceConfigurationResponse($userDeviceEntity);
                         array_push($userDevices, $userDevice);
                     }

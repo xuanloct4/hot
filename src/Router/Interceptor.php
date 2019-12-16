@@ -41,6 +41,8 @@ class Interceptor
     public $scopes;
     public $chanelId;
     public $interceptData;
+    public $token;
+    public $authorization;
 
     public function authorize($uriComponents, $requestHeaders, $requestMethod, $requestParams, $requestBody)
     {
@@ -92,10 +94,13 @@ class Interceptor
                                 switch ($this->chanelId) {
                                     case Configuration::BOARD:
                                         $boardConfiguration = BoardConfigurationService::getInstance()->findByAuthID($auth_id);
+//                                        var_dump($boardConfiguration);
                                         if ($boardConfiguration != null) {
                                             $this->requestHeaders[Constants::BoardID] = $boardConfiguration->id;
                                             $this->scopes = $boardConfiguration->scopes;
                                             $this->interceptData = $boardConfiguration;
+                                            $this->token = $token;
+                                            $this->authorization = $item;
                                         }
                                         break;
                                     case Configuration::USER:
@@ -104,6 +109,8 @@ class Interceptor
                                             $this->requestHeaders[Constants::UserID] = $userConfiguration->id;
                                             $this->scopes = $userConfiguration->scopes;
                                             $this->interceptData = $userConfiguration;
+                                            $this->token = $token;
+                                            $this->authorization = $item;
                                         }
                                         break;
                                     case Configuration::USER_DEVICE:
@@ -112,6 +119,8 @@ class Interceptor
                                             $this->requestHeaders[Constants::UserDeviceID] = $userDeviceConfiguration->id;
                                             $this->scopes = $userDeviceConfiguration->scopes;
                                             $this->interceptData = $userDeviceConfiguration;
+                                            $this->token = $token;
+                                            $this->authorization = $item;
                                         }
                                         break;
                                     case Configuration::SERVER:
@@ -120,6 +129,8 @@ class Interceptor
                                             $this->requestHeaders[Constants::ServerID] = $serverConfiguration->id;
                                             $this->scopes = $serverConfiguration->scopes;
                                             $this->interceptData = $serverConfiguration;
+                                            $this->token = $token;
+                                            $this->authorization = $item;
                                         }
                                         break;
                                     default:

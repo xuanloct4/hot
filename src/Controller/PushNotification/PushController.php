@@ -30,7 +30,7 @@ class PushController extends PreprocessingController
     {
         $userDevicesID = StringUtils::trimStringToArray("|", $this->interceptData->user_device_id);
 
-        var_dump($userDevicesID);
+//        var_dump($userDevicesID);
 
         $content = json_encode($this->requestBody);
         $configuration = $this->configuration;
@@ -59,6 +59,7 @@ class PushController extends PreprocessingController
 
         foreach ($userDevicesID as $userDeviceID) {
             $userDevice = UserDeviceService::getInstance()->findFirst($userDeviceID);
+            var_dump($userDevice->push_registration_token);
 
             // For Android
             $regId = "dVRMTwRWz78:APA91bEfxoZbku9iF3QgaO6mdo1kk_F-H290150h4ovbko4cdca_-aRNJe9D5LVRypjIlFcdGN6G5CvayA4BPOiIGJYAA2AAF217dFKoQEBPd7mQRL4ZDZNRy_0pmppdcoL_7Cb_hi1e";
