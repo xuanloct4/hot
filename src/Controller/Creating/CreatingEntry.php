@@ -21,18 +21,18 @@ class CreatingEntry extends PreprocessingController
     {
         switch ($this->configuration) {
             case Configuration::BOARD:
-                return $this->creatingBoardConfiguration();
+                return $this->creatingBoardEntry();
             case Configuration::USER:
-                return $this->creatingUserConfiguration();
+                return $this->creatingUserEntry();
             case Configuration::USER_DEVICE:
-                return $this->creatingUserDeviceConfiguration();
+                return $this->creatingUserDeviceEntry();
             case Configuration::SERVER:
-                return $this->creatingServerConfiguration();
+                return $this->creatingServerEntry();
         }
         return self::notFoundResponse();
     }
 
-    public function creatingBoardConfiguration()
+    public function creatingBoardEntry()
     {
         try {
             $request = new CreateBoardConfigurationRequest($this->requestBody);
@@ -45,7 +45,7 @@ class CreatingEntry extends PreprocessingController
 
     }
 
-    public function creatingUserConfiguration()
+    public function creatingUserEntry()
     {
         try {
             $request = new CreateUserConfigurationRequest($this->requestBody);
@@ -57,7 +57,7 @@ class CreatingEntry extends PreprocessingController
         }
     }
 
-    public function creatingUserDeviceConfiguration()
+    public function creatingUserDeviceEntry()
     {
         try {
             $request = new CreateUserDeviceConfiguationRequest($this->requestBody);
@@ -69,7 +69,7 @@ class CreatingEntry extends PreprocessingController
         }
     }
 
-    public function creatingServerConfiguration()
+    public function creatingServerEntry()
     {
         try {
             $request = new CreateServerConfigurationRequest($this->requestBody);

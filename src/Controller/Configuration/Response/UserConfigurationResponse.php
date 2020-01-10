@@ -9,6 +9,7 @@ use Src\Utils\DateTimeUtils;
 
 class UserConfigurationResponse extends Response
 {
+    public $id;
     public $name;
     public $address;
     public $location;
@@ -27,6 +28,7 @@ class UserConfigurationResponse extends Response
 
     public function __construct(User $user)
     {
+        $this->id = $user->id;
         $this->name = $user->name;
         $this->address = $user->address;
         $this->location = $user->location;

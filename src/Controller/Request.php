@@ -4,12 +4,12 @@ namespace Src\Controller;
 
 interface iRequest
 {
-    function toArray();
+   public function toArray();
 }
 
-abstract class Request implements iRequest
+class Request implements iRequest
 {
-    function toArray() {
+    public function toArray() {
         return get_object_vars($this);
     }
 }

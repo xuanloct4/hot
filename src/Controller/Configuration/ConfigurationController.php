@@ -36,12 +36,12 @@ class ConfigurationController extends PreprocessingController
                     break;
             }
 
-            return $this->findConfiguration($configurationQuery);
+            return ConfigurationController::searchConfiguration($configurationQuery);
         }
         return self::notFoundResponse();
     }
 
-    public function findConfiguration($configurationQuery)
+    public static function searchConfiguration($configurationQuery)
     {
         try {
             $order_by_list = array();

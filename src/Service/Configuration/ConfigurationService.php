@@ -264,7 +264,9 @@ class ConfigurationService extends DBService
         $id_query = $this->buildOrAndQueryForColumn($id_spec, "id", $id_spec->isAnd);
         $whereStatement = $id_query . " AND (";
         $whereStatement = $whereStatement . $this->buildWhereClause($queryList, $request->isAnd) . ")";
-        $whereStatement = $whereStatement . $this->buildOrderByClause($request->order_by_list);
+        if($request->order_by_list) {
+            $whereStatement = $whereStatement . $this->buildOrderByClause($request->order_by_list);
+        }
 
 
         $statement = "

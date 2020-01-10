@@ -31,9 +31,11 @@ String StringUtil::stringFromJson(JsonObject& json) {
 }
 
 char* StringUtil::convertToChar(String text) {
-    char c_text[sizeof(text)];
-    text.toCharArray(c_text, sizeof(c_text));
-    return c_text;
+//    int str_len = text.length() + 1; 
+//    char c_text[str_len];
+//    text.toCharArray(c_text, str_len);
+//    return c_text;
+    return (char*)text.c_str();
 }
 
 

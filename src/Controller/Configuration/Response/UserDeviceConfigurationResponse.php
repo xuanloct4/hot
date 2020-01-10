@@ -9,6 +9,7 @@
 
     class UserDeviceConfigurationResponse extends Response
     {
+        public $id;
         public $name;
         public $description;
         public $model;
@@ -31,6 +32,7 @@
 
         public function __construct(UserDevice $userDevice)
         {
+            $this->id = $userDevice->id;
             $this->name = $userDevice->name;
             $this->description = $userDevice->description;
             $this->model = $userDevice->model;

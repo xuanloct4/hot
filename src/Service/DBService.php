@@ -208,17 +208,21 @@ abstract class DBService implements iDBService
     public function insert(Array $input)
     {
         $table = $this->table();
+        $firstPassField = false;
 
         $fields = "(";
         $values = "(";
         $keys = array_keys($input);
         for ($i = 0; $i < sizeof($keys); $i++) {
-            if ($i > 0) {
-                $fields = $fields . ", ";
-                $values = $values . ", ";
+            if ($keys[$i] != null) {
+                if ($firstPassField) {
+                    $fields = $fields . ", ";
+                    $values = $values . ", ";
+                }
+                $fields = $fields . "`" . $keys[$i] . "`";
+                $values = $values . ":" . $keys[$i];
+                $firstPassField = true;
             }
-            $fields = $fields . $keys[$i];
-            $values = $values . ":" . $keys[$i];
         }
 
         $fields = $fields . ")";
@@ -230,6 +234,10 @@ abstract class DBService implements iDBService
             VALUES
             $values;
             ";
+
+
+//        var_dump($fields);
+//        var_dump($statement);
 
         $this->executeDB($statement, $input);
 //	 	var_dump($this->dbConnection()->lastInsertId());
@@ -250,9 +258,11 @@ abstract class DBService implements iDBService
         $keyValues = "";
         $keys = array_keys($inputId);
         for ($i = 0; $i < sizeof($keys); $i++) {
-            $keyValues = $keyValues . $keys[$i] . " = :" . $keys[$i];
-            if ($i < sizeof($keys) - 1) {
-                $keyValues = $keyValues . ",\n";
+            if($keys[$i] != null) {
+                $keyValues = $keyValues . "`" . $keys[$i] . "`" . " = :" . $keys[$i];
+                if ($i < sizeof($keys) - 1) {
+                    $keyValues = $keyValues . ",\n";
+                }
             }
         }
 

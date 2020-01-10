@@ -7,6 +7,7 @@ use Src\Entity\Configuration\Configuration;
 
 class ConfigurationResponse extends Response
 {
+    public $id;
     public $files;
     public $uris;
     public $binary;
@@ -22,6 +23,7 @@ class ConfigurationResponse extends Response
 
     public function __construct(Configuration $configuration)
     {
+        $this->id = $configuration->id;
         $this->files = $configuration->files;
         $this->uris = $configuration->uris;
         $this->binary = $configuration->binary;

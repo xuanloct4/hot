@@ -30,5 +30,20 @@ class UpdateConfigurationRequest extends Request
         $this->type = $arr["type"];
         $this->scopes = $arr["scopes"];
         $this->category = $arr["category"];
+//        if ($arr["is_deleted"] != null) {
+            if ($arr["is_deleted"]) {
+                $this->is_deleted = 1;
+            } else {
+                $this->is_deleted = 0;
+            }
+//        }
+
+//        if ($arr["is_activated"] != null) {
+            if ($arr["is_activated"]) {
+                $this->is_activated = 1;
+            } else {
+                $this->is_activated = 0;
+            }
+//        }
     }
 }

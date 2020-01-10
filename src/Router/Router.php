@@ -40,8 +40,10 @@ class Router
             if (StringUtils::compareStringIgnoreCase($api->content, $requestMethod)) {
                 $matches = array();
                 preg_match("/{$api->representation}/", $uri, $matches);
-//             var_dump($matches);
-                if (sizeof($matches) > 0) {
+//                var_dump($uri);
+//                var_dump($api->representation);
+//                var_dump($matches);
+                if (sizeof($matches) > 0 && StringUtils::compareStringIgnoreCase($uri, $matches[0])) {
 //                    var_dump($api);
                     $apiScopes = StringUtils::getScopes($api->scopes);
                     $clientScopes = StringUtils::getScopes($scopes);

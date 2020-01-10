@@ -189,4 +189,8 @@ class StringUtils
             return false;
         }
     }
+
+    public static function joinArrayToString($separator, Array $array) {
+        return implode($separator, $array);
+    }
 }

@@ -32,5 +32,20 @@ class UpdateUserConfigurationRequest extends Request
         $this->authorized_id = $arr["authorized_id"];
         $this->preferences = $arr["preferences"];
         $this->scopes = $arr["scopes"];
+        //        if ($arr["is_deleted"] != null) {
+        if ($arr["is_deleted"]) {
+            $this->is_deleted = 1;
+        } else {
+            $this->is_deleted = 0;
+        }
+//        }
+
+//        if ($arr["is_activated"] != null) {
+        if ($arr["is_activated"]) {
+            $this->is_activated = 1;
+        } else {
+            $this->is_activated = 0;
+        }
+//        }
     }
 }

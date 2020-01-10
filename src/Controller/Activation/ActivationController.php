@@ -5,7 +5,9 @@ namespace Src\Controller\Activation;
 
 use Src\Controller\Activation\Request\ActivateBoardConfigurationRequest;
 use Src\Controller\Activation\Request\ActivateDeviceConfigurationRequest;
+use Src\Controller\Activation\Request\ActivateUserConfigurationRequest;
 use Src\Controller\Activation\Response\BoardConfigurationResponse;
+use Src\Controller\Activation\Response\UserResponse;
 use Src\Controller\Configuration\Response\ConfigurationResponse;
 use Src\Controller\Activation\Response\DeviceConfigurationResponse;
 use Src\Controller\Controller;
@@ -16,6 +18,9 @@ use Src\Service\Board\BoardConfigurationDTO;
 use Src\Service\Board\BoardConfigurationService;
 use Src\Service\Configuration\ConfigurationService;
 use Src\Service\User\DeviceService;
+use Src\Service\User\UserDeviceService;
+use Src\Service\User\UserDTO;
+use Src\Service\User\UserService;
 
 class ActivationController extends PreprocessingController
 {
@@ -62,12 +67,33 @@ class ActivationController extends PreprocessingController
 
     private function activateUserConfiguration()
     {
+        $activateRequest = new ActivateUserConfigurationRequest($this->requestBody);
+        $a = AuthorizationService::getInstance()->findFirstByIDAndCode($activateRequest->board_id, $activateRequest->authorized_code, $this->configuration);
+        if ($a != null) {
+            $userEntity = UserService::getInstance()->findByAuthID($a->id);
+            if ($userEntity != null) {
+                // Update status is_activated = true
+                $userDTO = new UserDTO($userEntity);
+                $userDTO->setIsActivated(b'1');
+                $userDTO->setIsDeleted(b'0');
+                UserService::getInstance()->update($userDTO->toArray());
+                // TODO
+                //Log to log table
+
+                $userResponse = new UserResponse($userEntity);
+                $configurations = ConfigurationService::getInstance()->findByConfigIds($userEntity->configuration, $userEntity->scopes);
+                $userResponse->configuration = ConfigurationResponse::toConfigurationResponses($configurations);
+
+                return Controller::jsonEncodedResponse($userResponse);
+            }
+        }
         return self::notFoundResponse();
     }
 
     private function activateUserDeviceConfiguration()
     {
         $activateRequest = new ActivateDeviceConfigurationRequest($this->requestBody);
+//        var_dump($activateRequest);
         $device = DeviceService::getInstance()->findByModelAndOS($activateRequest->model, $activateRequest->os);
         if ($device != null) {
             $deviceConfiguration = new DeviceConfigurationResponse($device);

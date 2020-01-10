@@ -16,8 +16,9 @@ class HardDeletingEntry extends PreprocessingController
 
     function processDELETERequest()
     {
-        if (sizeof($this->uriComponents) > Configuration::BASE_URL_COMPONENT_NUMBER + $this->idComponentNumber) {
-            $this->id = Configuration::getConfiguration($this->uriComponents[Configuration::BASE_URL_COMPONENT_NUMBER + $this->idComponentNumber]);
+        $num = Configuration::BASE_URL_COMPONENT_NUMBER + $this->idComponentNumber;
+        if (sizeof($this->uriComponents) > $num) {
+            $this->id = $this->uriComponents[$num];
         }
         switch ($this->configuration) {
             case Configuration::BOARD:

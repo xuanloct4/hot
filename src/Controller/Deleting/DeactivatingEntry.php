@@ -4,11 +4,13 @@ namespace Src\Controller\Deleting;
 
 
 use Src\Controller\PreprocessingController;
+use Src\Definition\Comparison;
 use Src\Definition\Configuration;
 use Src\Service\Board\BoardConfigurationService;
 use Src\Service\Server\ServerConfigurationService;
 use Src\Service\User\UserDeviceService;
 use Src\Service\User\UserService;
+use Src\Utils\StringUtils;
 
 class DeactivatingEntry extends PreprocessingController
 {
@@ -17,8 +19,9 @@ class DeactivatingEntry extends PreprocessingController
 
     function processDELETERequest()
     {
-        if (sizeof($this->uriComponents) > Configuration::BASE_URL_COMPONENT_NUMBER + $this->idComponentNumber) {
-            $this->id = Configuration::getConfiguration($this->uriComponents[Configuration::BASE_URL_COMPONENT_NUMBER + $this->idComponentNumber]);
+        $num = Configuration::BASE_URL_COMPONENT_NUMBER + $this->idComponentNumber;
+        if (sizeof($this->uriComponents) > $num) {
+            $this->id = $this->uriComponents[$num];
         }
         switch ($this->configuration) {
             case Configuration::BOARD:
@@ -36,9 +39,17 @@ class DeactivatingEntry extends PreprocessingController
     public function updateDeactivatedBoardConfiguration()
     {
         try {
-            BoardConfigurationService::getInstance()->update(array("id" => $this->id,
-                "is_activated" => b'0'));
-            return $this->jsonEncodedResponse(null);
+            $boardEntity = $this->interceptData;
+            $targetBoardConfiguration = BoardConfigurationService::getInstance()->findFirst($this->id);
+            if ($boardEntity != null && $boardEntity->scopes != null ) {
+                if($targetBoardConfiguration != null && $targetBoardConfiguration->scopes != null &&
+                    (StringUtils::compareScope($boardEntity->scopes, $targetBoardConfiguration->scopes) == Comparison::descending)) {
+                    BoardConfigurationService::getInstance()->update(array("id" => $this->id,
+                        "is_activated" => b'0'));
+                    return $this->jsonEncodedResponse(null);
+                    }
+                }
+            return self::respondUnprocessableEntity();
         } catch (\Exception $e) {
             return self::respondUnprocessableEntity();
         }
@@ -47,9 +58,17 @@ class DeactivatingEntry extends PreprocessingController
     public function updateDeactivatedUserConfiguration()
     {
         try {
-            UserService::getInstance()->update(array("id" => $this->id,
-                "is_activated" => b'0'));
-            return $this->jsonEncodedResponse(null);
+            $userEntities = $this->interceptData;
+            $targetUser = UserService::getInstance()->findFirst($this->id);
+            if ($userEntities != null && $userEntities->scopes != null ) {
+                if($targetUser != null && $targetUser->scopes != null &&
+                    (StringUtils::compareScope($userEntities->scopes, $targetUser->scopes) == Comparison::descending)) {
+                    UserService::getInstance()->update(array("id" => $this->id,
+                        "is_activated" => b'0'));
+                    return $this->jsonEncodedResponse(null);
+                }
+            }
+            return self::respondUnprocessableEntity();
         } catch (\Exception $e) {
             return self::respondUnprocessableEntity();
         }
@@ -58,9 +77,17 @@ class DeactivatingEntry extends PreprocessingController
     public function updateDeactivatedUserDeviceConfiguration()
     {
         try {
-            UserDeviceService::getInstance()->update(array("id" => $this->id,
-                "is_activated" => b'0'));
-            return $this->jsonEncodedResponse(null);
+            $userDeviceEntities = $this->interceptData;
+            $targetUserDevice = UserDeviceService::getInstance()->findFirst($this->id);
+            if ($userDeviceEntities != null && $userDeviceEntities->scopes != null ) {
+                if($targetUserDevice != null && $targetUserDevice->scopes != null &&
+                    (StringUtils::compareScope($userDeviceEntities->scopes, $targetUserDevice->scopes) == Comparison::descending)) {
+                    UserDeviceService::getInstance()->update(array("id" => $this->id,
+                        "is_activated" => b'0'));
+                    return $this->jsonEncodedResponse(null);
+                }
+            }
+            return self::respondUnprocessableEntity();
         } catch (\Exception $e) {
             return self::respondUnprocessableEntity();
         }
@@ -69,9 +96,17 @@ class DeactivatingEntry extends PreprocessingController
     public function updateDeactivatedServerConfiguration()
     {
         try {
-            ServerConfigurationService::getInstance()->update(array("id" => $this->id,
-                "is_activated" => b'0'));
-            return $this->jsonEncodedResponse(null);
+            $serverEntities = $this->interceptData;
+            $targetServer = ServerConfigurationService::getInstance()->findFirst($this->id);
+            if ($serverEntities != null && $serverEntities->scopes != null ) {
+                if($targetServer != null && $targetServer->scopes != null &&
+                    (StringUtils::compareScope($serverEntities->scopes, $targetServer->scopes) == Comparison::descending)) {
+                    ServerConfigurationService::getInstance()->update(array("id" => $this->id,
+                        "is_activated" => b'0'));
+                    return $this->jsonEncodedResponse(null);
+                }
+            }
+            return self::respondUnprocessableEntity();
         } catch (\Exception $e) {
             return self::respondUnprocessableEntity();
         }

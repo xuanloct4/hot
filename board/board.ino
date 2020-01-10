@@ -69,7 +69,7 @@ boolean is_configured = false;
 String boardConfigString;
 
 //// Persistent data
-String defaultJson = "{\"lastSupportedTime\":\"2050-01-0100:00:00\",\"boardID\":\"1\",\"passCode\":\"g1mj0lypTdtr1LEJnWdR2Kcvli1zZh/CmCgWJXFjOjepv7D3FAMQ9XVgrld7vRWEyawPKkhkzlnEtL2d0YoeGrD6EaUdP2WlXXTM7U8JO0s9bGv4Sw44KDX6J7STw6iOOMJl9hcL9uOQZKgM/0J0/qmrWE8mTB9Sm3aokmRo3PVmcdbVTVJJiYKIqOgm0CmeuQpo+yRkpTDyhd21R2pWvB5S8wX2MgJPohdrAvDJXmDEgOLqyug9fqFxt5X98+p0o9WkdKxSpOeq+m8S3Bbb8KakHNox5o2vvq48A4tAOjID2V/izyzQ3JJ0tHWmfH5bWmyy9OS3iJHffiiNXzD4nD0QL54niooWLLXXT3Ic7rIhWzJ5jnBX/MvDMenQPP6YsbgiziLcdEk8LjIIYMJ8uMIErHdDqjR/vnFSvJ8S7k5OY4AcivUWeoIvHHNcBRZAa/CzA+bD6rtaj6a/C3Z5JtRcwprr3W/wjjkbaahTBXaMAgQlTP+CPGZArjGCkpYA3O60qLvZ95bQg0xSRWC4sTrj2iiK7loeAEtKYDxvS5JIqlFJ/VZ5Regg2Gn8AAx0xWSA+TihoN2soHyBnu4z4ofk73QRwBwVJCSyZ8Tl12A46a7/4tY80SfZuaooIcY/qMAV8EqOHfv6cKOhJluJ5ZxwQik3v6NbuYQ46SFUFmw=\",\"chanelID\":0,\"timeForAutoConnect\":6000,\"timeForChecking\":6000,\"timeForAlarmRepeat\":1000,\"retryTime\":5000,\"alarmRepeat\":300,\"host\":\"http://192.168.1.7\",\"loginURL\":\"/hot/public/api/board/authorize\",\"checkURL\":\"/hot/public/api/board/configuration\",\"notifyURL\":\"/hot/public/api/device/push\",\"httpPort\":80,\"httpsPort\":443,\"systemConfiguration\":{},\"userConfiguration\":{},\"buzzerPin\":4,\"pirPin\":15,\"ssid\":\"ESPap\",\"password\":\"thereisnospoon\", \"wifiConfigFile\": \"/wifi_config.dat\", \"boardConfigFile\": \"/board_config.dat\"}";
+String defaultJson = "{\"lastSupportedTime\":\"2050-01-0100:00:00\",\"boardID\":\"1\",\"passCode\":\"g1mj0lypTdtr1LEJnWdR2Kcvli1zZh/CmCgWJXFjOjepv7D3FAMQ9XVgrld7vRWEyawPKkhkzlnEtL2d0YoeGrD6EaUdP2WlXXTM7U8JO0s9bGv4Sw44KDX6J7STw6iOOMJl9hcL9uOQZKgM/0J0/qmrWE8mTB9Sm3aokmRo3PVmcdbVTVJJiYKIqOgm0CmeuQpo+yRkpTDyhd21R2pWvB5S8wX2MgJPohdrAvDJXmDEgOLqyug9fqFxt5X98+p0o9WkdKxSpOeq+m8S3Bbb8KakHNox5o2vvq48A4tAOjID2V/izyzQ3JJ0tHWmfH5bWmyy9OS3iJHffiiNXzD4nD0QL54niooWLLXXT3Ic7rIhWzJ5jnBX/MvDMenQPP6YsbgiziLcdEk8LjIIYMJ8uMIErHdDqjR/vnFSvJ8S7k5OY4AcivUWeoIvHHNcBRZAa/CzA+bD6rtaj6a/C3Z5JtRcwprr3W/wjjkbaahTBXaMAgQlTP+CPGZArjGCkpYA3O60qLvZ95bQg0xSRWC4sTrj2iiK7loeAEtKYDxvS5JIqlFJ/VZ5Regg2Gn8AAx0xWSA+TihoN2soHyBnu4z4ofk73QRwBwVJCSyZ8Tl12A46a7/4tY80SfZuaooIcY/qMAV8EqOHfv6cKOhJluJ5ZxwQik3v6NbuYQ46SFUFmw=\",\"chanelID\":0,\"timeForAutoConnect\":6000,\"timeForChecking\":6000,\"timeForAlarmRepeat\":1000,\"retryTime\":5000,\"alarmRepeat\":300,\"host\":\"http://192.168.1.8\",\"loginURL\":\"/hot/public/api/board/authorize\",\"checkURL\":\"/hot/public/api/board/configuration/search\",\"notifyURL\":\"/hot/public/api/device/push\",\"httpPort\":80,\"httpsPort\":443,\"systemConfiguration\":{},\"userConfiguration\":{},\"buzzerPin\":4,\"pirPin\":15,\"ssid\":\"ESPap\",\"password\":\"thereisnospoon\", \"wifiConfigFile\": \"/wifi_config.dat\", \"boardConfigFile\": \"/board_config.dat\"}";
 
 //// Keys
 String lastSupportedTimeKey = "lastSupportedTime";
@@ -96,34 +96,36 @@ String passwordKey = "password";          //ESP AP Pass
 String wifiConfigFileKey = "wifiConfigFile";
 String boardConfigFileKey = "boardConfigFile";
 
+
+
 //// Get from Board config JSON object
 long getLong(String key) {
-long value = jsonUtils.getLong(getBoardConfigJO(), stringUtil.convertToChar(key));
+long value = jsonUtils.getLong(getBoardConfigJO(), (char*)key.c_str());
 return value;
 }
 
 int getInteger(String key) {
-int value = jsonUtils.getInteger(getBoardConfigJO(), stringUtil.convertToChar(key));
+int value = jsonUtils.getInteger(getBoardConfigJO(), (char*)key.c_str());
 return value;
 }
 
 String getString(String key) {
-String value = jsonUtils.getString(getBoardConfigJO(), stringUtil.convertToChar(key));
+String value = jsonUtils.getString(getBoardConfigJO(), (char*)key.c_str());
 return value;
 }
 
 double getDouble(String key) {
-double value = jsonUtils.getDouble(getBoardConfigJO(), stringUtil.convertToChar(key));
+double value = jsonUtils.getDouble(getBoardConfigJO(), (char*)key.c_str());
 return value;
 }
 
 JsonObject& getObject(String key) {
-JsonObject& value = jsonUtils.getObject(getBoardConfigJO(), stringUtil.convertToChar(key));
+JsonObject& value = jsonUtils.getObject(getBoardConfigJO(), (char*)key.c_str());
 return value;
 }
 
 JsonArray& getArray(String key) {
-JsonArray& value = jsonUtils.getArray(getBoardConfigJO(), stringUtil.convertToChar(key));
+JsonArray& value = jsonUtils.getArray(getBoardConfigJO(), (char*)key.c_str());
 return value;
 }
 
@@ -135,9 +137,11 @@ return stringUtil.jsonFromString(boardConfigString);
 void updateConfiguration() {
 String text = spiffsUtils.readFile(getString(boardConfigFileKey));
 text.trim();
-if (boardConfigString == "" || stringUtil.jsonFromString(text) == JsonObject::invalid()) {
-boardConfigString = defaultJson;
-}
+//if (boardConfigString == "" || stringUtil.jsonFromString(text) == JsonObject::invalid()) {
+//boardConfigString = defaultJson;
+//} else {
+//  boardConfigString = text;
+//}
 }
 
 //void handleRoot(){
@@ -222,13 +226,15 @@ server.send(404, "text/plain", message);
 }
 
 void setup() {
-updateConfiguration();
 delay(100);
 Serial.begin(115200);
-pinMode(getInteger(pirPinKey), INPUT);     // declare sensor as input
-pinMode (getInteger(buzzerPinKey), OUTPUT) ;     // declare buzzer as input
-
 Serial.println("");
+boardConfigString = defaultJson;
+updateConfiguration();
+pinMode(getInteger(pirPinKey), INPUT);     // declare sensor as input
+pinMode (getInteger(buzzerPinKey), OUTPUT) ;     // declare buzzer as output
+
+Serial.println(getInteger(pirPinKey));
 
 String wifiInfo = spiffsUtils.readFile(getString(wifiConfigFileKey));
 //    Serial.println(wifiInfo);

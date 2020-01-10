@@ -40,5 +40,20 @@ class UpdateUserDeviceConfiguationRequest extends Request
         $this->reference_device = $arr["reference_device"];
         $this->configuration = $arr["configuration"];
         $this->scopes = $arr["scopes"];
+        //        if ($arr["is_deleted"] != null) {
+        if ($arr["is_deleted"]) {
+            $this->is_deleted = 1;
+        } else {
+            $this->is_deleted = 0;
+        }
+//        }
+
+//        if ($arr["is_activated"] != null) {
+        if ($arr["is_activated"]) {
+            $this->is_activated = 1;
+        } else {
+            $this->is_activated = 0;
+        }
+//        }
     }
 }

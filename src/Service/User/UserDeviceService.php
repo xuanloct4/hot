@@ -30,4 +30,13 @@ class UserDeviceService extends DBService
     {
         return $this->findFirstByAND(array('authorized_id' => $auth_id));
     }
+
+    // CRUD
+    public function findByModelAndOS($model,$os)
+    {
+        $result = $this->findFirstByAND(array(
+            'model' => $model,
+            'os' => $os));
+        return $result;
+    }
 }

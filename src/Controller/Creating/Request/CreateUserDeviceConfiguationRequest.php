@@ -15,6 +15,7 @@ class CreateUserDeviceConfiguationRequest extends Request
     public $os;
     public $firmware;
     public $user_id;
+    public $board_id;
     public $status;
     public $authorized_id;
     public $reference_device;
@@ -33,12 +34,26 @@ class CreateUserDeviceConfiguationRequest extends Request
         $this->os = $arr["os"];
         $this->firmware = $arr["firmware"];
         $this->user_id = $arr["user_id"];
+        $this->board_id = $arr["board_id"];
         $this->status = $arr["status"];
         $this->authorized_id = $arr["authorized_id"];
         $this->reference_device = $arr["reference_device"];
 //        $this->configuration = $arr["configuration"];
         $this->scopes = $arr["scopes"];
-        $this->is_activated = b'0';
-        $this->is_deleted = b'0';
+        //        if ($arr["is_deleted"] != null) {
+        if ($arr["is_deleted"]) {
+            $this->is_deleted = 1;
+        } else {
+            $this->is_deleted = 0;
+        }
+//        }
+
+//        if ($arr["is_activated"] != null) {
+        if ($arr["is_activated"]) {
+            $this->is_activated = 1;
+        } else {
+            $this->is_activated = 0;
+        }
+//        }
     }
 }

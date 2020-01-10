@@ -2,11 +2,14 @@
     namespace Src\Controller\Configuration\Response;
 
     use Src\Controller\Response;
+    use Src\Entity\Board\Board;
     use Src\Entity\Board\BoardConfiguration;
     use Src\Utils\DateTimeUtils;
 
     class BoardConfigurationResponse extends Response
     {
+        public $id;
+        public $board;
         public $server_configuration_id;
         public $user_device_id;
         public $user_id;
@@ -22,8 +25,13 @@
 
         public $servertime;
 
-        public function __construct(BoardConfiguration $boardConfiguration)
+        public function __construct(BoardConfiguration $boardConfiguration, Board $board)
         {
+
+            $this->id = $boardConfiguration->id;
+            if ($board != null) {
+                $this->board = new BoardResponse($board);
+            }
             $this->server_configuration_id = $boardConfiguration->server_configuration_id;
             $this->user_device_id = $boardConfiguration->user_device_id;
             $this->user_id = $boardConfiguration->user_id;

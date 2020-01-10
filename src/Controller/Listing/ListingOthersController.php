@@ -12,6 +12,7 @@ use Src\Controller\PreprocessingController;
 use Src\Definition\Comparison;
 use Src\Definition\Configuration;
 use Src\Service\Board\BoardConfigurationService;
+use Src\Service\Board\BoardService;
 use Src\Service\Configuration\ConfigurationService;
 use Src\Service\User\UserDeviceService;
 use Src\Service\User\UserService;
@@ -44,7 +45,8 @@ class ListingOthersController extends PreprocessingController
                     $boardConfigEntity = $boardConfigEntities[$i];
                     if($boardConfigEntity->scopes != null &&
                         (StringUtils::compareScope($this->scopes, $boardConfigEntity->scopes) == Comparison::descending)) {
-                        $boardConfiguration =  new BoardConfigurationResponse($boardConfigEntity);
+                        $boardEntity = BoardService::getInstance()->findFirst($boardConfigEntity->board_id);
+                        $boardConfiguration =  new BoardConfigurationResponse($boardConfigEntity, $boardEntity);
                         array_push($boardConfigurations, $boardConfiguration);
                     }
 

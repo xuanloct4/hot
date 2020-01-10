@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">HoTMobile</string>
+    <string name="title_activity_dailing">ExampleActivity</string>
+<string name="dialing_activity_title">Please check security of your Home</string>
+<string name="go_back">Go back</string>
+<string name="go_to_the_app">Go to the App</string>
+<string name="reverse_text_activity_title">Reversed text!</string>
+<string name="menuitem_reverse_text_label">Reverse text</string>
+
+</resources>

@@ -13,6 +13,7 @@ use Src\Controller\PreprocessingController;
 use Src\Definition\Configuration;
 use Src\Definition\Constants;
 use Src\Service\Board\BoardConfigurationService;
+use Src\Service\Board\BoardService;
 use Src\Service\Configuration\ConfigurationService;
 use Src\Service\Server\ServerConfigurationService;
 use Src\Service\User\UserDeviceService;
@@ -43,8 +44,8 @@ class DetailController extends PreprocessingController
             $this->id = $this->requestHeaders[Constants::BoardID];
             $boardConfigEntity = BoardConfigurationService::getInstance()->findFirst($this->id);
             if ($boardConfigEntity != null) {
-
-                $boardConfiguration = new BoardConfigurationResponse($boardConfigEntity);
+                $boardEntity = BoardService::getInstance()->findFirst($boardConfigEntity->board_id);
+                $boardConfiguration = new BoardConfigurationResponse($boardConfigEntity, $boardEntity);
                 $configurations = ConfigurationService::getInstance()->findByConfigIds($boardConfigEntity->configuration, $boardConfigEntity->scopes);
                 $boardConfiguration->configuration = ConfigurationResponse::toConfigurationResponses($configurations);
 

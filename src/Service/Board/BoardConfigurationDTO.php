@@ -21,9 +21,6 @@ class BoardConfigurationDTO extends DTO
     private $is_activated;
     private $is_deleted;
 
-    /**
-     * BoardConfigurationDTO constructor.
-     */
     public function __construct(BoardConfiguration $boardConfiguration)
     {
         $this->id = $boardConfiguration->id;

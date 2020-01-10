@@ -11,7 +11,10 @@ use Src\Controller\Controller;
 use Src\Controller\PreprocessingController;
 use Src\Definition\Configuration;
 use Src\Service\Board\BoardConfigurationService;
+use Src\Service\Board\BoardService;
 use Src\Service\Configuration\ConfigurationService;
+use Src\Service\User\UserDeviceService;
+use Src\Service\User\UserService;
 use Src\Utils\StringUtils;
 
 class ListingItsController extends PreprocessingController
@@ -38,7 +41,8 @@ class ListingItsController extends PreprocessingController
             switch ($this->chanelId) {
                 case Configuration::BOARD:
                     $boardEntity = $this->interceptData;
-                    $boardConfiguration = new BoardConfigurationResponse($boardEntity);
+                    $board = BoardService::getInstance()->findFirst($boardEntity->board_id);
+                    $boardConfiguration = new BoardConfigurationResponse($boardEntity, $board);
                     $boardConfigurations = array($boardConfiguration);
                     return Controller::jsonEncodedResponse($boardConfigurations);
                 case Configuration::USER:
@@ -51,7 +55,8 @@ class ListingItsController extends PreprocessingController
                         if (strcmp("",$boardId) != 0) {
                             $boardEntity = BoardConfigurationService::getInstance()->findFirst($boardId);
                             if ($boardEntity != null) {
-                                $boardConfiguration = new BoardConfigurationResponse($boardEntity);
+                                $board = BoardService::getInstance()->findFirst($boardEntity->board_id);
+                                $boardConfiguration = new BoardConfigurationResponse($boardEntity, $board);
                                 array_push($boardConfigurations, $boardConfiguration);
                             }
                         }
@@ -68,7 +73,8 @@ class ListingItsController extends PreprocessingController
                         if (strcmp("", $boardId) != 0) {
                             $boardEntity = BoardConfigurationService::getInstance()->findFirst($boardId);
                             if ($boardEntity != null) {
-                                $boardConfiguration = new BoardConfigurationResponse($boardEntity);
+                                $board = BoardService::getInstance()->findFirst($boardEntity->board_id);
+                                $boardConfiguration = new BoardConfigurationResponse($boardEntity, $board);
                                 array_push($boardConfigurations, $boardConfiguration);
                             }
                         }
@@ -98,7 +104,7 @@ class ListingItsController extends PreprocessingController
                     for ($i = 0; $i < sizeof($userIds); $i++) {
                         $userId = trim($userIds[$i]);
                         if (strcmp("", $userId) != 0) {
-                            $userEntity = BoardConfigurationService::getInstance()->findFirst($userId);
+                            $userEntity = UserService::getInstance()->findFirst($userId);
                             if ($userEntity != null) {
                                 $userConfiguration = new UserConfigurationResponse($userEntity);
                                 array_push($userConfigurations, $userConfiguration);
@@ -121,7 +127,7 @@ class ListingItsController extends PreprocessingController
                     for ($i = 0; $i < sizeof($userIds); $i++) {
                         $userId = trim($userIds[$i]);
                         if (strcmp("", $userId) != 0) {
-                            $userEntity = BoardConfigurationService::getInstance()->findFirst($userId);
+                            $userEntity = UserService::getInstance()->findFirst($userId);
                             if ($userEntity != null) {
                                 $userConfiguration = new UserConfigurationResponse($userEntity);
                                 array_push($userConfigurations, $userConfiguration);
@@ -153,7 +159,7 @@ class ListingItsController extends PreprocessingController
                     for ($i = 0; $i < sizeof($userDeviceIds); $i++) {
                         $userDeviceId = trim($userDeviceIds[$i]);
                         if (strcmp("",$userDeviceId) != 0) {
-                            $userDeviceEntity = BoardConfigurationService::getInstance()->findFirst($userDeviceId);
+                            $userDeviceEntity = UserDeviceService::getInstance()->findFirst($userDeviceId);
                             if ($userDeviceEntity != null) {
                                 $userDeviceConfiguration = new UserDeviceConfigurationResponse($userDeviceEntity);
                                 array_push($userDeviceConfigurations, $userDeviceConfiguration);
@@ -171,7 +177,7 @@ class ListingItsController extends PreprocessingController
                     for ($i = 0; $i < sizeof($userDeviceIds); $i++) {
                         $userDeviceId = trim($userDeviceIds[$i]);
                         if (strcmp("",$userDeviceId) != 0) {
-                            $userDeviceEntity = BoardConfigurationService::getInstance()->findFirst($userDeviceId);
+                            $userDeviceEntity = UserDeviceService::getInstance()->findFirst($userDeviceId);
                             if ($userDeviceEntity != null) {
                                 $userDeviceConfiguration = new UserDeviceConfigurationResponse($userDeviceEntity);
                                 array_push($userDeviceConfigurations, $userDeviceConfiguration);
